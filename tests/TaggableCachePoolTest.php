@@ -1,10 +1,9 @@
 <?php
 
-namespace Cache\IntegrationTests\Tests;
+namespace Cache\IntegrationTests;
 
 use Cache\Doctrine\CachePool;
 use Cache\Taggable\TaggablePoolInterface;
-use Doctrine\Common\Cache\MemcachedCache;
 use Psr\Cache\CacheItemPoolInterface;
 
 abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
