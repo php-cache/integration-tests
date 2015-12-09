@@ -1,11 +1,15 @@
 {
-    "name":         "cache/integration-tests",
-    "type":         "library",
-    "description":  "A PSR6-taggable cache",
-    "keywords":     ["cache", "psr6", "test"],
-    "homepage":     "https://github.com/php-cache/integration-tests",
-    "license":      "MIT",
-    "authors":      [
+    "name":        "cache/integration-tests",
+    "type":        "library",
+    "description": "A PSR6-taggable cache",
+    "keywords":    [
+        "cache",
+        "psr6",
+        "test"
+    ],
+    "homepage":    "https://github.com/php-cache/integration-tests",
+    "license":     "MIT",
+    "authors":     [
         {
             "name":     "Aaron Scherer",
             "email":    "aequasi@gmail.com",
@@ -17,13 +21,14 @@
             "homepage": "https://github.com/nyholm"
         }
     ],
-    "require":
-    {
+    "require":     {
         "php":                    "^5.5|^7",
-        "cache/doctrine-adapter": "dev-master",
         "doctrine/cache":         "^1.3"
     },
-    "autoload":     {
+    "require-dev": {
+        "cache/doctrine-adapter": "dev-master"
+    },
+    "autoload":    {
         "psr-4": {
             "Cache\\IntegrationTests\\": "tests/"
         }
