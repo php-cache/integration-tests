@@ -25,9 +25,7 @@
         "php":                    "^5.5|^7",
         "doctrine/cache":         "^1.3"
     },
-    "require-dev": {
-        "cache/doctrine-adapter": "dev-master"
-    },
+    "require-dev": {},
     "autoload":    {
         "psr-4": {
             "Cache\\IntegrationTests\\": "tests/"
