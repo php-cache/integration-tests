@@ -17,32 +17,23 @@ class CachePool
 
     private $cache;
 
-    public function getItem($key)
+    public function getItem($key, array $tags = array())
     {
-        $taggedKey = $this->generateCacheKey($key, []);
+        $taggedKey = $this->generateCacheKey($key, $tags);
 
-        $item = false;
-        if (isset($this->cache[$taggedKey])) {
-            $item = $this->cache[$taggedKey];
-        }
-        if (false === $item) {
-            $item = new CacheItem($taggedKey, []);
-        }
-
-        return $item;
+        return $this->getTagItem($taggedKey);
     }
 
     protected function getTagItem($key)
     {
-        $item = false;
         if (isset($this->cache[$key])) {
             $item = $this->cache[$key];
-        }
-        if (false === $item) {
-            $item = new CacheItem($key, []);
+        } else {
+            $item = new CacheItem($key);
         }
 
-        return $item;    }
+        return $item;
+    }
 
 
     public function save(CacheItemInterface $item)
@@ -54,5 +45,10 @@ class CachePool
     public function exposeGenerateCacheKey($key, array $tags)
     {
         return $this->generateCacheKey($key, $tags);
+    }
+
+    public function exposeFlushTag($name)
+    {
+        return $this->flushTag($name);
     }
 }
