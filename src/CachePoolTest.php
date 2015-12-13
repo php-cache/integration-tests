@@ -3,7 +3,6 @@
 namespace Cache\IntegrationTests;
 
 use Cache\Doctrine\CachePool;
-use Cache\Taggable\TaggablePoolInterface;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
