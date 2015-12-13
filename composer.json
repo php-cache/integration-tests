@@ -1,7 +1,7 @@
 {
     "name":        "cache/integration-tests",
     "type":        "library",
-    "description": "A PSR6-taggable cache",
+    "description": "Integration tests for PSR-6 cache implementations",
     "keywords":    [
         "cache",
         "psr6",
