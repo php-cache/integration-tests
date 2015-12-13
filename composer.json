@@ -28,7 +28,7 @@
     "require-dev": {},
     "autoload":    {
         "psr-4": {
-            "Cache\\IntegrationTests\\": "tests/"
+            "Cache\\IntegrationTests\\": "src/"
         }
     }
 }
