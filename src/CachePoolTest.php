@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of php-cache\integration-tests package.
+ *
+ * (c) 2015-2015 Aaron Scherer <aequasi@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Cache\IntegrationTests;
 
 use Cache\Doctrine\CachePool;
@@ -9,17 +18,16 @@ use Psr\Cache\CacheItemPoolInterface;
 abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var CacheItemPoolInterface
+     * @type CacheItemPoolInterface
      */
     private $cache;
 
     /**
      * @return CacheItemPoolInterface that is used in the tests
      */
-    abstract function createCachePool();
+    abstract public function createCachePool();
 
     /**
-     *
      * @return CachePool
      */
     public function setUp()
@@ -41,7 +49,6 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item = $this->cache->getItem('bar');
         $item->set('4712');
         $this->cache->save($item);
-
 
         $fooItem = $this->cache->getItem('foo');
         $this->assertTrue($fooItem->isHit());
@@ -101,12 +108,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testGetItems()
     {
-        $keys = ['foo', 'bar', 'baz'];
+        $keys  = ['foo', 'bar', 'baz'];
         $items = $this->cache->getItems($keys);
         $this->assertCount(3, $items);
 
-        /** @var CacheItemInterface $item */
-        foreach ($items as $i=>$item) {
+        /** @type CacheItemInterface $item */
+        foreach ($items as $i => $item) {
             $item->set($i);
             $this->cache->save($item);
         }
@@ -115,13 +122,13 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         foreach ($sameItems as $item) {
             $this->assertTrue($item->isHit());
         }
-
     }
+
     public function testDeleteItems()
     {
         $items = $this->cache->getItems(['foo', 'bar', 'baz']);
 
-        /** @var CacheItemInterface $item */
+        /** @type CacheItemInterface $item */
         foreach ($items as $idx => $item) {
             $item->set($idx);
             $this->cache->save($item);
@@ -138,5 +145,4 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->cache->getItem('bar')->isHit());
         $this->assertTrue($this->cache->getItem('baz')->isHit());
     }
-
 }
