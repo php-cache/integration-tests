@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of php-cache\integration-tests package.
+ *
+ * (c) 2015-2015 Aaron Scherer <aequasi@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Cache\IntegrationTests;
 
 use Cache\Doctrine\CachePool;
@@ -9,17 +18,16 @@ use Psr\Cache\CacheItemPoolInterface;
 abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var CacheItemPoolInterface|TaggablePoolInterface
+     * @type CacheItemPoolInterface|TaggablePoolInterface
      */
     private $cache;
 
     /**
      * @return TaggablePoolInterface that is used in the tests
      */
-    abstract function createCachePool();
+    abstract public function createCachePool();
 
     /**
-     *
      * @return CachePool
      */
     public function setUp()
@@ -46,11 +54,9 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         $item->set('foobar');
         $this->cache->save($item);
 
-
         $this->assertTrue($this->cache->getItem('tobias', ['developer', 'speaker'])->isHit());
         $this->assertTrue($this->cache->getItem('tobias', ['speaker', 'developer'])->isHit());
         $this->assertFalse($this->cache->getItem('tobias', ['developer'])->isHit());
-
 
         // Remove everything tagged with 'nice guy'
         $this->cache->clear(['nice guy']);
@@ -64,7 +70,7 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Make sure we dont get conflicts with the tag key generation
+     * Make sure we dont get conflicts with the tag key generation.
      */
     public function testKeyGeneration()
     {
@@ -75,5 +81,4 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         $item2 = $this->cache->getItem('tag:speaker:key', []);
         $this->assertFalse($item2->isHit());
     }
-
 }
