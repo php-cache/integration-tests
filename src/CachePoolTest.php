@@ -67,31 +67,31 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testBasicUsage()
     {
-        $item = $this->cache->getItem('foo');
+        $item = $this->cache->getItem('key');
         $item->set('4711');
         $this->cache->save($item);
 
-        $item = $this->cache->getItem('bar');
+        $item = $this->cache->getItem('key2');
         $item->set('4712');
         $this->cache->save($item);
 
-        $fooItem = $this->cache->getItem('foo');
+        $fooItem = $this->cache->getItem('key');
         $this->assertTrue($fooItem->isHit());
         $this->assertEquals('4711', $fooItem->get());
 
-        $barItem = $this->cache->getItem('bar');
+        $barItem = $this->cache->getItem('key2');
         $this->assertTrue($barItem->isHit());
         $this->assertEquals('4712', $barItem->get());
 
-        // Remove 'foo' and make sure 'bar' is still there
-        $this->cache->deleteItem('foo');
-        $this->assertFalse($this->cache->getItem('foo')->isHit());
-        $this->assertTrue($this->cache->getItem('bar')->isHit());
+        // Remove 'key' and make sure 'key2' is still there
+        $this->cache->deleteItem('key');
+        $this->assertFalse($this->cache->getItem('key')->isHit());
+        $this->assertTrue($this->cache->getItem('key2')->isHit());
 
         // Remove everything
         $this->cache->clear();
-        $this->assertFalse($this->cache->getItem('foo')->isHit());
-        $this->assertFalse($this->cache->getItem('bar')->isHit());
+        $this->assertFalse($this->cache->getItem('key')->isHit());
+        $this->assertFalse($this->cache->getItem('key2')->isHit());
     }
 
     public function testGetItem()
@@ -224,49 +224,49 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testDeferredSave()
     {
-        $item = $this->cache->getItem('foo');
+        $item = $this->cache->getItem('key');
         $item->set('4711');
         $this->cache->saveDeferred($item);
 
-        $item = $this->cache->getItem('bar');
+        $item = $this->cache->getItem('key2');
         $item->set('4712');
         $this->cache->saveDeferred($item);
 
         // They are not saved yet but should be a hit
-        $this->assertTrue($this->cache->getItem('foo')->isHit());
-        $this->assertTrue($this->cache->getItem('bar')->isHit());
+        $this->assertTrue($this->cache->getItem('key')->isHit());
+        $this->assertTrue($this->cache->getItem('key2')->isHit());
 
         $this->cache->commit();
 
         // They should be a hit after the commit as well
-        $this->assertTrue($this->cache->getItem('foo')->isHit());
-        $this->assertTrue($this->cache->getItem('bar')->isHit());
+        $this->assertTrue($this->cache->getItem('key')->isHit());
+        $this->assertTrue($this->cache->getItem('key2')->isHit());
     }
 
     public function testDeleteDeferredItem()
     {
-        $item = $this->cache->getItem('foo');
+        $item = $this->cache->getItem('key');
         $item->set('4711');
         $this->cache->saveDeferred($item);
-        $this->assertTrue($this->cache->getItem('foo')->isHit());
+        $this->assertTrue($this->cache->getItem('key')->isHit());
 
-        $this->cache->deleteItem('foo');
-        $this->assertFalse($this->cache->getItem('foo')->isHit());
+        $this->cache->deleteItem('key');
+        $this->assertFalse($this->cache->getItem('key')->isHit());
 
         $this->cache->commit();
-        $this->assertFalse($this->cache->getItem('foo')->isHit());
+        $this->assertFalse($this->cache->getItem('key')->isHit());
     }
 
     public function testDeferredSaveWithoutCommit()
     {
-        $item = $this->cache->getItem('foo');
+        $item = $this->cache->getItem('key');
         $item->set('4711');
         $this->cache->saveDeferred($item);
 
         $this->cache = null;
 
         $cache = $this->createCachePool();
-        $this->assertTrue($cache->getItem('foo')->isHit());
+        $this->assertTrue($cache->getItem('key')->isHit());
     }
 
     public function testCommit()

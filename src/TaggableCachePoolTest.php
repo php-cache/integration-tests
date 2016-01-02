@@ -125,4 +125,52 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         $item = $this->cache->getItem('key');
         $this->assertEquals('key', $item->getKey(), 'Key can not change when using no tags');
     }
+
+    public function testKeysShouldAppearUnchanged()
+    {
+        $item = $this->cache->getItem('key', ['tag']);
+        $item->set('foobar');
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('key', ['tag']);
+        $this->assertEquals('key', $item->getKey(), 'Key should appear intact even when using tags');
+    }
+
+    public function testSaveDeferred()
+    {
+        $item = $this->cache->getItem('key', ['tag']);
+        $item->set('foobar');
+        $this->cache->saveDeferred($item);
+
+        $item = $this->cache->getItem('key2', ['tag2']);
+        $item->set('foobar');
+        $this->cache->saveDeferred($item);
+
+        // Both should be hit
+        $this->assertTrue($this->cache->getItem('key', ['tag'])->isHit());
+        $this->assertTrue($this->cache->getItem('key2', ['tag2'])->isHit());
+
+        // Clear tag2 and make sure we do not remove everything
+        $this->cache->clear(['tag2']);
+        $this->assertTrue($this->cache->getItem('key', ['tag'])->isHit());
+        $this->assertFalse($this->cache->getItem('key2', ['tag2'])->isHit());
+
+        // Clear everything and make sure everything is removed
+        $this->cache->clear();
+        $this->assertFalse($this->cache->getItem('key', ['tag'])->isHit());
+        $this->assertFalse($this->cache->getItem('key2', ['tag2'])->isHit());
+    }
+
+    public function testKeysWithDeferred()
+    {
+        $item = $this->cache->getItem('key', ['tag']);
+        $item->set('foobar');
+        $this->cache->saveDeferred($item);
+
+        $this->assertTrue($this->cache->getItem('key', ['tag'])->isHit());
+        $this->assertFalse($this->cache->getItem('key', ['tag2'])->isHit());
+        $this->assertFalse($this->cache->getItem('key')->isHit());
+
+        $this->cache->clear();
+    }
 }
