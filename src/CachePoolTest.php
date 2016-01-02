@@ -389,7 +389,6 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
     {
         $item = $this->cache->getItem('key');
         $item->set('value');
-        $this->assertFalse($item->isHit(), 'It can not be a hit before it is saved');
         $this->cache->save($item);
         $this->assertTrue($item->isHit());
 
