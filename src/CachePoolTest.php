@@ -50,6 +50,8 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
     public static function invalidKeys()
     {
         return [
+            [2],
+            [2.5],
             ['{str'],
             ['rand{'],
             ['rand{str'],
@@ -302,15 +304,6 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache->save($item);
 
         $this->assertTrue($this->cache->hasItem($key));
-    }
-
-    public function testGetItemWithNonStringKey()
-    {
-        $item = $this->cache->getItem(2);
-        $this->assertInstanceOf('Psr\Cache\CacheItemInterface', $item);
-
-        $item = $this->cache->getItem(2.5);
-        $this->assertInstanceOf('Psr\Cache\CacheItemInterface', $item);
     }
 
     /**
