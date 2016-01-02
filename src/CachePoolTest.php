@@ -273,7 +273,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testKeyLength()
     {
-        $key = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.';
+        $key  = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.';
         $item = $this->cache->getItem($key);
         $item->set('value');
         $this->cache->save($item);
