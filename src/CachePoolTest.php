@@ -47,7 +47,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
      *
      * @return array
      */
-    public function invalidKeys()
+    public static function invalidKeys()
     {
         return [
             ['{str'],

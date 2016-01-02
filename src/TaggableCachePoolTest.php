@@ -40,6 +40,11 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache->clear();
     }
 
+    public function invalidKeys()
+    {
+        return CachePoolTest::invalidKeys();
+    }
+
     public function testBasicUsage()
     {
         $item = $this->cache->getItem('tobias', ['developer', 'speaker']);
@@ -172,5 +177,59 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->cache->getItem('key')->isHit());
 
         $this->cache->clear();
+    }
+
+    /**
+     * @expectedException \Psr\Cache\InvalidArgumentException
+     * @dataProvider invalidKeys
+     */
+    public function testClearInvalidKeys($key)
+    {
+        $this->cache->clear([$key]);
+    }
+
+    /**
+     * @expectedException \Psr\Cache\InvalidArgumentException
+     * @dataProvider invalidKeys
+     */
+    public function testGetItemInvalidKeys($key)
+    {
+        $this->cache->getItem('key', [$key]);
+    }
+
+    /**
+     * @expectedException \Psr\Cache\InvalidArgumentException
+     * @dataProvider invalidKeys
+     */
+    public function testGetItemsInvalidKeys($key)
+    {
+        $this->cache->getItems('key', [$key]);
+    }
+
+    /**
+     * @expectedException \Psr\Cache\InvalidArgumentException
+     * @dataProvider invalidKeys
+     */
+    public function testHasItemInvalidKeys($key)
+    {
+        $this->cache->hasItem($key);
+    }
+
+    /**
+     * @expectedException \Psr\Cache\InvalidArgumentException
+     * @dataProvider invalidKeys
+     */
+    public function testDeleteItemInvalidKeys($key)
+    {
+        $this->cache->deleteItem('key', [$key]);
+    }
+
+    /**
+     * @expectedException \Psr\Cache\InvalidArgumentException
+     * @dataProvider invalidKeys
+     */
+    public function testDeleteItemsInvalidKeys($key)
+    {
+        $this->cache->deleteItems(['key'], [$key]);
     }
 }
