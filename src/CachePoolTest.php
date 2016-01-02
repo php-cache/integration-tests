@@ -35,9 +35,20 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache = $this->createCachePool();
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
-        $this->cache->clear();
+        if ($this->cache !== null) {
+            $this->cache->clear();
+        }
+    }
+
+    /**
+     * Data provider for invalid keys
+     * @return array
+     */
+    public function invalidKeys()
+    {
+        return [['{'],['}'],['('],[')'],['/'],['\\'],['@'],[':']];
     }
 
     public function testBasicUsage()
@@ -69,41 +80,19 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->cache->getItem('bar')->isHit());
     }
 
-    public function testDeferredSave()
+    public function testGetItem()
     {
-        $item = $this->cache->getItem('foo');
-        $item->set('4711');
-        $this->cache->saveDeferred($item);
-
-        $item = $this->cache->getItem('bar');
-        $item->set('4712');
-        $this->cache->saveDeferred($item);
-
-        // They are not saved yet, should be false
-        $this->assertFalse($this->cache->getItem('foo')->isHit());
-        $this->assertFalse($this->cache->getItem('bar')->isHit());
-
-        $this->cache->commit();
-
-        // They should be a hit now
-        $this->assertTrue($this->cache->getItem('foo')->isHit());
-        $this->assertTrue($this->cache->getItem('bar')->isHit());
-    }
-
-    public function testHasItem()
-    {
-        $this->assertFalse($this->cache->hasItem('foo'));
-
-        $item = $this->cache->getItem('foo');
-        $item->set('4711');
-
-        // The item is not saved
-        $this->assertFalse($this->cache->hasItem('foo'));
-
-        // Save
+        $item = $this->cache->getItem('key');
+        $item->set('value');
         $this->cache->save($item);
 
-        $this->assertTrue($this->cache->hasItem('foo'));
+        // get existing item
+        $item = $this->cache->getItem('key');
+        $this->assertEquals('value', $item->get());
+
+        // get non-existent item
+        $item = $this->cache->getItem('key2');
+        $this->assertEquals(null, $item->get());
     }
 
     public function testGetItems()
@@ -118,10 +107,62 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
             $this->cache->save($item);
         }
 
-        $sameItems = $this->cache->getItems($keys);
-        foreach ($sameItems as $item) {
-            $this->assertTrue($item->isHit());
+        $keys[]='biz';
+        $items = $this->cache->getItems($keys);
+        $this->assertCount(4, $items);
+        foreach ($items as $item) {
+            $return[]=$item->isHit()?1:0;
         }
+
+        $this->assertEquals(3, array_sum($return), 'Expecting 3 items to be a hit.');
+    }
+
+    public function testHasItem()
+    {
+        $item = $this->cache->getItem('key');
+        $item->set('value');
+        $this->cache->save($item);
+
+        // has existing item
+        $this->assertEquals(true, $this->cache->hasItem('key'));
+
+        // has non-existent item
+        $this->assertEquals(false, $this->cache->hasItem('key2'));
+    }
+
+    public function testClear()
+    {
+        $item = $this->cache->getItem('key');
+        $item->set('value');
+        $this->cache->save($item);
+
+        $return = $this->cache->clear();
+
+        $this->assertEquals(true, $return);
+        $this->assertEquals(null, $this->cache->getItem('key')->get());
+    }
+
+    public function testClearWithDeferredItems()
+    {
+        $item = $this->cache->getItem('key');
+        $item->set('value');
+        $this->cache->saveDeferred($item);
+
+        $this->cache->clear();
+        $this->cache->commit();
+
+        $this->assertEquals(null, $this->cache->getItem('key')->get());
+    }
+
+    public function testDeleteItem()
+    {
+        $item = $this->cache->getItem('key');
+        $item->set('value');
+        $this->cache->save($item);
+
+        $return = $this->cache->deleteItem('key');
+        $this->assertEquals(true, $return);
+        $this->assertEquals(null, $this->cache->getItem('key')->get());
     }
 
     public function testDeleteItems()
@@ -134,15 +175,130 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
             $this->cache->save($item);
         }
 
-        // All should be a hit
+        // All should be a hit but 'biz'
         $this->assertTrue($this->cache->getItem('foo')->isHit());
         $this->assertTrue($this->cache->getItem('bar')->isHit());
         $this->assertTrue($this->cache->getItem('baz')->isHit());
+        $this->assertFalse($this->cache->getItem('biz')->isHit());
 
-        $this->cache->deleteItems(['foo', 'bar']);
+        $return = $this->cache->deleteItems(['foo', 'bar', 'biz']);
+        $this->assertTrue($return);
 
         $this->assertFalse($this->cache->getItem('foo')->isHit());
         $this->assertFalse($this->cache->getItem('bar')->isHit());
         $this->assertTrue($this->cache->getItem('baz')->isHit());
+        $this->assertFalse($this->cache->getItem('biz')->isHit());
+    }
+
+    public function testSave()
+    {
+        $item = $this->cache->getItem('key');
+        $item->set('value');
+        $return = $this->cache->save($item);
+
+        $this->assertEquals(true, $return);
+        $this->assertEquals('value', $this->cache->getItem('key')->get());
+    }
+
+    public function testDeferredSave()
+    {
+        $item = $this->cache->getItem('foo');
+        $item->set('4711');
+        $this->cache->saveDeferred($item);
+
+        $item = $this->cache->getItem('bar');
+        $item->set('4712');
+        $this->cache->saveDeferred($item);
+
+        // They are not saved yet but should be a hit
+        $this->assertTrue($this->cache->getItem('foo')->isHit());
+        $this->assertTrue($this->cache->getItem('bar')->isHit());
+
+        $this->cache->commit();
+
+        // They should be a hit after the commit as well
+        $this->assertTrue($this->cache->getItem('foo')->isHit());
+        $this->assertTrue($this->cache->getItem('bar')->isHit());
+    }
+
+    public function testDeferredSaveWithoutCommit()
+    {
+        $item = $this->cache->getItem('foo');
+        $item->set('4711');
+        $this->cache->saveDeferred($item);
+
+        $this->cache = null;
+
+        $cache = $this->createCachePool();
+        $this->assertTrue($cache->getItem('foo')->isHit());
+    }
+
+
+    public function testCommit()
+    {
+        $item = $this->cache->getItem('key');
+        $item->set('value');
+        $this->cache->saveDeferred($item);
+        $return = $this->cache->commit();
+
+        $this->assertEquals(true, $return);
+        $this->assertEquals('value', $this->cache->getItem('key')->get());
+    }
+
+    public function testExpiration()
+    {
+        $item = $this->cache->getItem('key');
+        $item->set('value');
+        // Expire after 2 seconds
+        $item->expiresAfter(2);
+        $this->cache->save($item);
+
+        sleep(4);
+        $this->assertFalse($this->cache->getItem('key')->isHit());
+    }
+
+    /**
+     * @expectedException \Psr\Cache\InvalidArgumentException
+     * @dataProvider invalidKeys
+     */
+    public function testGetItemInvalidKeys($key)
+    {
+        $this->cache->getItem(sprintf('random%stext', $key));
+    }
+
+    /**
+     * @expectedException \Psr\Cache\InvalidArgumentException
+     * @dataProvider invalidKeys
+     */
+    public function testGetItemsInvalidKeys($key)
+    {
+        $this->cache->getItems(['key1', sprintf('random%stext', $key), 'key2']);
+    }
+
+    /**
+     * @expectedException \Psr\Cache\InvalidArgumentException
+     * @dataProvider invalidKeys
+     */
+    public function testHasItemInvalidKeys($key)
+    {
+        $this->cache->hasItem(sprintf('random%stext', $key));
+    }
+
+    /**
+     * @expectedException \Psr\Cache\InvalidArgumentException
+     * @dataProvider invalidKeys
+     */
+    public function testDeleteItemInvalidKeys($key)
+    {
+        $this->cache->deleteItem(sprintf('random%stext', $key));
+    }
+
+    /**
+     * @expectedException \Psr\Cache\InvalidArgumentException
+     * @dataProvider invalidKeys
+     */
+    public function testDeleteItemsInvalidKeys($key)
+    {
+        $this->cache->deleteItems(['key1', sprintf('random%stext', $key), 'key2']);
     }
 }
