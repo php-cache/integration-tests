@@ -43,12 +43,13 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Data provider for invalid keys
+     * Data provider for invalid keys.
+     *
      * @return array
      */
     public function invalidKeys()
     {
-        return [['{'],['}'],['('],[')'],['/'],['\\'],['@'],[':']];
+        return [['{'], ['}'], ['('], [')'], ['/'], ['\\'], ['@'], [':']];
     }
 
     public function testBasicUsage()
@@ -107,11 +108,11 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
             $this->cache->save($item);
         }
 
-        $keys[]='biz';
-        $items = $this->cache->getItems($keys);
+        $keys[] = 'biz';
+        $items  = $this->cache->getItems($keys);
         $this->assertCount(4, $items);
         foreach ($items as $item) {
-            $return[]=$item->isHit()?1:0;
+            $return[] = $item->isHit() ? 1 : 0;
         }
 
         $this->assertEquals(3, array_sum($return), 'Expecting 3 items to be a hit.');
@@ -232,7 +233,6 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $cache = $this->createCachePool();
         $this->assertTrue($cache->getItem('foo')->isHit());
     }
-
 
     public function testCommit()
     {

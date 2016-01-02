@@ -57,6 +57,8 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->cache->getItem('tobias', ['developer', 'speaker'])->isHit());
         $this->assertTrue($this->cache->getItem('tobias', ['speaker', 'developer'])->isHit());
         $this->assertFalse($this->cache->getItem('tobias', ['developer'])->isHit());
+        $this->assertFalse($this->cache->getItem('tobias', ['king'])->isHit());
+        $this->assertFalse($this->cache->getItem('tobias')->isHit());
 
         // Remove everything tagged with 'nice guy'
         $this->cache->clear(['nice guy']);
@@ -69,16 +71,61 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->cache->getItem('tobias', ['developer', 'speaker'])->isHit());
     }
 
-    /**
-     * Make sure we dont get conflicts with the tag key generation.
-     */
-    public function testKeyGeneration()
+    public function testGetItem()
     {
-        $item1 = $this->cache->getItem('tobias', ['developer', 'speaker']);
-        $item1->set('foobar');
-        $this->cache->save($item1);
+        $item = $this->cache->getItem('tobias', ['developer', 'speaker']);
+        $item->set('value');
+        $this->cache->save($item);
 
-        $item2 = $this->cache->getItem('tag:speaker:key', []);
-        $this->assertFalse($item2->isHit());
+        $item = $this->cache->getItem('tobias', ['developer']);
+        $this->assertFalse($item->isHit(), 'There should be no item with key "tobias" and tag "developer"');
+    }
+
+    public function testGetItems()
+    {
+        $item = $this->cache->getItem('tobias', ['developer']);
+        $item->set('value');
+        $this->cache->save($item);
+
+        $items = $this->cache->getItems(['tobias', 'aaron'], ['developer']);
+        $this->assertCount(4, $items);
+        foreach ($items as $item) {
+            $return[] = $item->isHit() ? 1 : 0;
+        }
+
+        $this->assertEquals(3, array_sum($return), 'Expecting 1 items to be a hit.');
+    }
+
+    public function testHasItem()
+    {
+        $item = $this->cache->getItem('tobias', ['developer']);
+        $item->set('value');
+        $this->cache->save($item);
+
+        $this->assertTrue($this->cache->hasItem('tobias', ['developer']));
+        $this->assertFalse($this->cache->hasItem('aaron', ['developer']));
+    }
+
+    public function testDeleteItem()
+    {
+        $item = $this->cache->getItem('tobias', ['developer', 'speaker']);
+        $item->set('foobar');
+        $this->cache->save($item);
+
+        $this->cache->deleteItem('tobias', ['developer']);
+        $this->assertTrue($this->cache->getItem('tobias', ['developer', 'speaker'])->isHit());
+
+        $this->cache->deleteItem('tobias', ['developer', 'speaker']);
+        $this->assertFalse($this->cache->getItem('tobias', ['developer', 'speaker'])->isHit());
+    }
+
+    public function testNoKeyModificationWhenNoTags()
+    {
+        $item = $this->cache->getItem('key');
+        $item->set('foobar');
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('key');
+        $this->assertEquals('key', $item->getKey(), 'Key can not change when using no tags');
     }
 }
