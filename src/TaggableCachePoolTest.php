@@ -203,7 +203,7 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetItemsInvalidKeys($key)
     {
-        $this->cache->getItems('key', [$key]);
+        $this->cache->getItems(['key'], [$key]);
     }
 
     /**
