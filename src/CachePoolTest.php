@@ -419,4 +419,39 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item = $this->cache->getItem('key');
         $this->assertTrue($item->isHit());
     }
+
+    public function testSaveDeferredWhenChangingValues()
+    {
+        $item = $this->cache->getItem('key');
+        $item->set('value');
+        $this->cache->saveDeferred($item);
+
+        $item = $this->cache->getItem('key');
+        $item->set('new value');
+
+        $item = $this->cache->getItem('key');
+        $this->assertEquals('value', $item->get(), 'Items that is put in the deferred queue should not get their values changed');
+
+        $this->cache->commit();
+        $item = $this->cache->getItem('key');
+        $this->assertEquals('value', $item->get(), 'Items that is put in the deferred queue should not get their values changed');
+    }
+
+    public function testSaveDeferredOverwrite()
+    {
+        $item = $this->cache->getItem('key');
+        $item->set('value');
+        $this->cache->saveDeferred($item);
+
+        $item = $this->cache->getItem('key');
+        $item->set('new value');
+        $this->cache->saveDeferred($item);
+
+        $item = $this->cache->getItem('key');
+        $this->assertEquals('new value', $item->get());
+
+        $this->cache->commit();
+        $item = $this->cache->getItem('key');
+        $this->assertEquals('new value', $item->get());
+    }
 }
