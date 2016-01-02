@@ -88,12 +88,9 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache->save($item);
 
         $items = $this->cache->getItems(['tobias', 'aaron'], ['developer']);
-        $this->assertCount(4, $items);
-        foreach ($items as $item) {
-            $return[] = $item->isHit() ? 1 : 0;
-        }
-
-        $this->assertEquals(3, array_sum($return), 'Expecting 1 items to be a hit.');
+        $this->assertCount(2, $items);
+        $this->assertTrue($items['tobias']->isHit());
+        $this->assertFalse($items['aaron']->isHit());
     }
 
     public function testHasItem()
