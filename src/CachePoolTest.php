@@ -49,7 +49,20 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function invalidKeys()
     {
-        return [['{'], ['}'], ['('], [')'], ['/'], ['\\'], ['@'], [':']];
+        return [
+            ['{str'],
+            ['rand{'],
+            ['rand{str'],
+            ['rand}str'],
+            ['rand(str'],
+            ['rand)str'],
+            ['rand/str'],
+            ['rand\\str'],
+            ['rand@str'],
+            ['rand:str'],
+            [new \stdClass()],
+            [['array']],
+        ];
     }
 
     public function testBasicUsage()
@@ -291,13 +304,22 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->cache->hasItem($key));
     }
 
+    public function testGetItemWithNonStringKey()
+    {
+        $item = $this->cache->getItem(2);
+        $this->assertInstanceOf('Psr\Cache\CacheItemInterface', $item);
+
+        $item = $this->cache->getItem(2.5);
+        $this->assertInstanceOf('Psr\Cache\CacheItemInterface', $item);
+    }
+
     /**
      * @expectedException \Psr\Cache\InvalidArgumentException
      * @dataProvider invalidKeys
      */
     public function testGetItemInvalidKeys($key)
     {
-        $this->cache->getItem(sprintf('random%stext', $key));
+        $this->cache->getItem($key);
     }
 
     /**
@@ -306,7 +328,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetItemsInvalidKeys($key)
     {
-        $this->cache->getItems(['key1', sprintf('random%stext', $key), 'key2']);
+        $this->cache->getItems(['key1', $key, 'key2']);
     }
 
     /**
@@ -315,7 +337,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function testHasItemInvalidKeys($key)
     {
-        $this->cache->hasItem(sprintf('random%stext', $key));
+        $this->cache->hasItem($key);
     }
 
     /**
@@ -324,7 +346,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function testDeleteItemInvalidKeys($key)
     {
-        $this->cache->deleteItem(sprintf('random%stext', $key));
+        $this->cache->deleteItem($key);
     }
 
     /**
@@ -333,7 +355,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function testDeleteItemsInvalidKeys($key)
     {
-        $this->cache->deleteItems(['key1', sprintf('random%stext', $key), 'key2']);
+        $this->cache->deleteItems(['key1', $key, 'key2']);
     }
 
     public function testDataTypeString()
