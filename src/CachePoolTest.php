@@ -222,6 +222,20 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->cache->getItem('bar')->isHit());
     }
 
+    public function testDeleteDeferredItem()
+    {
+        $item = $this->cache->getItem('foo');
+        $item->set('4711');
+        $this->cache->saveDeferred($item);
+        $this->assertTrue($this->cache->getItem('foo')->isHit());
+
+        $this->cache->deleteItem('foo');
+        $this->assertFalse($this->cache->getItem('foo')->isHit());
+
+        $this->cache->commit();
+        $this->assertFalse($this->cache->getItem('foo')->isHit());
+    }
+
     public function testDeferredSaveWithoutCommit()
     {
         $item = $this->cache->getItem('foo');
@@ -255,6 +269,16 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
         sleep(4);
         $this->assertFalse($this->cache->getItem('key')->isHit());
+    }
+
+    public function testKeyLength()
+    {
+        $key = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.';
+        $item = $this->cache->getItem($key);
+        $item->set('value');
+        $this->cache->save($item);
+
+        $this->assertTrue($this->cache->hasItem($key));
     }
 
     /**
