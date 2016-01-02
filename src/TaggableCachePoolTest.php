@@ -125,4 +125,14 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         $item = $this->cache->getItem('key');
         $this->assertEquals('key', $item->getKey(), 'Key can not change when using no tags');
     }
+
+    public function testKeysShouldAppearUnchanged()
+    {
+        $item = $this->cache->getItem('key', ['tag']);
+        $item->set('foobar');
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('key', ['tag']);
+        $this->assertEquals('key', $item->getKey(), 'Key should appear intact even when using tags');
+    }
 }
