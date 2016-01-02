@@ -325,4 +325,37 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
     {
         $this->cache->deleteItems(['key1', sprintf('random%stext', $key), 'key2']);
     }
+
+    public function testDataTypeString()
+    {
+        $item = $this->cache->getItem('key');
+        $item->set('5');
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('key');
+        $this->assertTrue('5' === $item->get());
+        $this->assertTrue(is_string($item->get()));
+    }
+
+    public function testDataTypeInteger()
+    {
+        $item = $this->cache->getItem('key');
+        $item->set(5);
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('key');
+        $this->assertTrue(5 === $item->get());
+        $this->assertTrue(is_int($item->get()));
+    }
+
+    public function testDataTypeNull()
+    {
+        $item = $this->cache->getItem('key');
+        $item->set(null);
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('key');
+        $this->assertTrue(null === $item->get());
+        $this->assertTrue(is_null($item->get()));
+    }
 }
