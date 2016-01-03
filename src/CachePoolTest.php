@@ -11,7 +11,6 @@
 
 namespace Cache\IntegrationTests;
 
-use Cache\Doctrine\CachePool;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
@@ -27,9 +26,6 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
      */
     abstract public function createCachePool();
 
-    /**
-     * @return CachePool
-     */
     public function setUp()
     {
         $this->cache = $this->createCachePool();
