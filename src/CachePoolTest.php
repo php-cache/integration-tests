@@ -357,8 +357,8 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache->save($item);
 
         $item = $this->cache->getItem('key');
-        $this->assertTrue('5' === $item->get());
-        $this->assertTrue(is_string($item->get()));
+        $this->assertTrue('5' === $item->get(), 'Wrong data type. If we store a string we must get an string back.');
+        $this->assertTrue(is_string($item->get()), 'Wrong data type. If we store a string we must get an string back.');
     }
 
     public function testDataTypeInteger()
@@ -368,8 +368,8 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache->save($item);
 
         $item = $this->cache->getItem('key');
-        $this->assertTrue(5 === $item->get());
-        $this->assertTrue(is_int($item->get()));
+        $this->assertTrue(5 === $item->get(), 'Wrong data type. If we store an int we must get an int back.');
+        $this->assertTrue(is_int($item->get()), 'Wrong data type. If we store an int we must get an int back.');
     }
 
     public function testDataTypeNull()
@@ -379,8 +379,8 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache->save($item);
 
         $item = $this->cache->getItem('key');
-        $this->assertTrue(null === $item->get());
-        $this->assertTrue(is_null($item->get()));
+        $this->assertTrue(null === $item->get(), 'Wrong data type. If we store null we must get an null back.');
+        $this->assertTrue(is_null($item->get()), 'Wrong data type. If we store null we must get an null back.');
         $this->assertTrue($item->isHit(), 'It should be a hit even though the stored value is null.');
     }
 
