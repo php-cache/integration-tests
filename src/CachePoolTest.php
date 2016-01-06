@@ -199,7 +199,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->cache->getItem('key')->isHit(), 'A deleted item should not be a hit.');
         $this->assertFalse($this->cache->hasItem('key'), 'A deleted item should not be a in cache.');
 
-        $this->assertTrue($this->cache->deleteItem('key2'), 'Deleting an item that does not exist should be return true.');
+        $this->assertTrue($this->cache->deleteItem('key2'), 'Deleting an item that does not exist should return true.');
     }
 
     public function testDeleteItems()
