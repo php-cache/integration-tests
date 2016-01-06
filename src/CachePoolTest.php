@@ -129,28 +129,26 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $items  = $this->cache->getItems($keys);
         $this->assertCount(4, $items);
 
-        // Make sure that keys are preserved
-        $this->assertTrue(in_array('foo', array_keys($items)), 'Keys must be preserved when fetching multiple items');
-        $this->assertTrue(in_array('bar', array_keys($items)), 'Keys must be preserved when fetching multiple items');
-        $this->assertTrue(in_array('baz', array_keys($items)), 'Keys must be preserved when fetching multiple items');
-        $this->assertTrue(in_array('biz', array_keys($items)), 'Keys must be preserved when fetching multiple items');
+        foreach ($items as $key =>$item) {
+            $itemKey = $item->getKey();
+            $this->assertEquals($itemKey, $key, 'Keys must be preserved when fetching multiple items');
+            $this->assertEquals($key !== 'biz', $item->isHit());
+            $this->assertTrue(in_array($key, $keys), 'Cache key can not change.');
 
-        // Make sure we test if it is a hit
-        $this->assertTrue($items['foo']->isHit());
-        $this->assertEquals('foo', $items['foo']->getKey(), 'Cache key can not change.');
-        $this->assertTrue($items['bar']->isHit());
-        $this->assertEquals('bar', $items['bar']->getKey(), 'Cache key can not change.');
-        $this->assertTrue($items['baz']->isHit());
-        $this->assertEquals('baz', $items['baz']->getKey(), 'Cache key can not change.');
-        $this->assertFalse($items['biz']->isHit());
-        $this->assertEquals('biz', $items['biz']->getKey(), 'Cache key can not change.');
+            // Remove $key for $keys
+            foreach ($keys as $k => $v) {
+                if ($v===$key) {
+                    unset($keys[$k]);
+                }
+            }
+        }
     }
 
     public function testGetItemsEmpty()
     {
         $items = $this->cache->getItems([]);
         $this->assertCount(0, $items);
-        $this->assertTrue(is_array($items), 'A call to getItems with an empty array must always return an array.');
+        $this->assertTrue(!is_array( $items ) && !$items instanceof \Traversable, 'A call to getItems with an empty array must always return an array or \Traversable.');
     }
 
     public function testHasItem()
@@ -296,6 +294,9 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($return, 'commit() should return true on successful commit. ');
         $this->assertEquals('value', $this->cache->getItem('key')->get());
+
+        $return = $this->cache->commit();
+        $this->assertTrue($return, 'commit() should return true even if no items were deferred. ');
     }
 
     public function testExpiration()
@@ -309,7 +310,40 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         sleep(4);
         $item = $this->cache->getItem('key');
         $this->assertFalse($item->isHit());
-        $this->assertNull($item->get(), "Item's value must be null when isHi()t is false.");
+        $this->assertNull($item->get(), "Item's value must be null when isHit() is false.");
+    }
+
+    public function testExpiresAt()
+    {
+        $item = $this->cache->getItem('key');
+        $item->set('value');
+        $item->expiresAt(new \DateTime('+2hours'));
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('key');
+        $this->assertTrue($item->isHit());
+    }
+
+    public function testExpiresAtWithNull()
+    {
+        $item = $this->cache->getItem('key');
+        $item->set('value');
+        $item->expiresAt(null);
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('key');
+        $this->assertTrue($item->isHit());
+    }
+
+    public function testExpiresAfterWithNull()
+    {
+        $item = $this->cache->getItem('key');
+        $item->set('value');
+        $item->expiresAt(null);
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('key');
+        $this->assertTrue($item->isHit());
     }
 
     public function testKeyLength()
@@ -462,5 +496,16 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache->commit();
         $item = $this->cache->getItem('key');
         $this->assertEquals('new value', $item->get());
+    }
+
+    public function testSavingObject()
+    {
+        $item = $this->cache->getItem('key');
+        $item->set(new \DateTime());
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('key');
+        $value = $item->get();
+        $this->assertInstanceOf('\DateTime', $value, 'You must be able to store objects in cache.');
     }
 }
