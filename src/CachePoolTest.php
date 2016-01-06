@@ -148,7 +148,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
     {
         $items = $this->cache->getItems([]);
         $this->assertCount(0, $items);
-        $this->assertTrue(!is_array($items) && !$items instanceof \Traversable, 'A call to getItems with an empty array must always return an array or \Traversable.');
+        $this->assertTrue(is_array($items) || $items instanceof \Traversable, 'A call to getItems with an empty array must always return an array or \Traversable.');
     }
 
     public function testHasItem()
