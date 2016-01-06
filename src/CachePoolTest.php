@@ -3,7 +3,7 @@
 /*
  * This file is part of php-cache\integration-tests package.
  *
- * (c) 2015-2015 Aaron Scherer <aequasi@gmail.com>
+ * (c) 2015-2015 Aaron Scherer <aequasi@gmail.com>, Tobias Nyholm <tobias.nyholm@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -125,11 +125,11 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $keys[] = 'biz';
-        /** @var CacheItemInterface[] $items */
+        /** @type CacheItemInterface[] $items */
         $items  = $this->cache->getItems($keys);
         $this->assertCount(4, $items);
 
-        foreach ($items as $key =>$item) {
+        foreach ($items as $key => $item) {
             $itemKey = $item->getKey();
             $this->assertEquals($itemKey, $key, 'Keys must be preserved when fetching multiple items');
             $this->assertEquals($key !== 'biz', $item->isHit());
@@ -137,7 +137,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
             // Remove $key for $keys
             foreach ($keys as $k => $v) {
-                if ($v===$key) {
+                if ($v === $key) {
                     unset($keys[$k]);
                 }
             }
@@ -148,7 +148,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
     {
         $items = $this->cache->getItems([]);
         $this->assertCount(0, $items);
-        $this->assertTrue(!is_array( $items ) && !$items instanceof \Traversable, 'A call to getItems with an empty array must always return an array or \Traversable.');
+        $this->assertTrue(!is_array($items) && !$items instanceof \Traversable, 'A call to getItems with an empty array must always return an array or \Traversable.');
     }
 
     public function testHasItem()
@@ -504,7 +504,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item->set(new \DateTime());
         $this->cache->save($item);
 
-        $item = $this->cache->getItem('key');
+        $item  = $this->cache->getItem('key');
         $value = $item->get();
         $this->assertInstanceOf('\DateTime', $value, 'You must be able to store objects in cache.');
     }
