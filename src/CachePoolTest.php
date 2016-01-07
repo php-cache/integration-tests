@@ -71,6 +71,19 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    /**
+     * These keys are not required to be supported but the user may assume that they are. You could mark the tests with
+     * these as skipped.
+     *
+     * @return array
+     */
+    public static function suggestedKeys()
+    {
+        return [
+            ['foo bar'],
+        ];
+    }
+
     public function testBasicUsage()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -473,6 +486,38 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->cache->save($item), 'The implementation does not support a valid cache key');
 
         $this->assertTrue($this->cache->hasItem($key));
+    }
+
+    /**
+     * This test is not required by PSR-6 but is suggested. You could skip this test by implementing a protected
+     * variable like:
+     * <code>
+     *   protected $skippedTests = ['testSuggestedKeys' => 'Skipping suggested keys'];
+     * </code>.
+     *
+     * @dataProvider suggestedKeys
+     */
+    public function testSuggestedKeys($key)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        try {
+            $item = $this->cache->getItem($key);
+            $this->assertTrue($key === $item->getKey(), 'CacheItem::getKey() should return a non altered key.');
+            $this->cache->getItems(['key1', $key, 'key2']);
+            $this->cache->hasItem($key);
+            $this->cache->deleteItem($key);
+            $this->cache->deleteItems(['key1', $key, 'key2']);
+        } catch (\Exception $e) {
+            $this->fail(sprintf(
+                '[Not PSR-6] It is suggested that you support a cache key like "%s". This is not however a part of PSR-6 and you may skip this test. ',
+                $key
+            ));
+        }
     }
 
     /**
