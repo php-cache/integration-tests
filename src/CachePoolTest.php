@@ -493,7 +493,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
      * variable like:
      * <code>
      *   protected $skippedTests = ['testSuggestedKeys' => 'Skipping suggested keys'];
-     * </code>
+     * </code>.
      *
      * @dataProvider suggestedKeys
      */
@@ -519,6 +519,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
             ));
         }
     }
+
     /**
      * @expectedException \Psr\Cache\InvalidArgumentException
      * @dataProvider invalidKeys
