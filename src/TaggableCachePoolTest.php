@@ -17,6 +17,11 @@ use Psr\Cache\CacheItemPoolInterface;
 abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @type array with functionName => reason.
+     */
+    protected $skippedTests = [];
+
+    /**
      * @type CacheItemPoolInterface|TaggablePoolInterface
      */
     private $cache;
@@ -43,6 +48,12 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testBasicUsage()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('tobias', ['developer', 'speaker']);
         $item->set('foobar');
         $this->cache->save($item);
@@ -74,6 +85,12 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testGetItem()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('tobias', ['developer', 'speaker']);
         $item->set('value');
         $this->cache->save($item);
@@ -84,6 +101,12 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testGetItems()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('tobias', ['developer']);
         $item->set('value');
         $this->cache->save($item);
@@ -96,6 +119,12 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testHasItem()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('tobias', ['developer']);
         $item->set('value');
         $this->cache->save($item);
@@ -106,6 +135,12 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testDeleteItem()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('tobias', ['developer', 'speaker']);
         $item->set('foobar');
         $this->cache->save($item);
@@ -119,6 +154,12 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testNoKeyModificationWhenNoTags()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('foobar');
         $this->cache->save($item);
@@ -129,6 +170,12 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testKeysShouldAppearUnchanged()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key', ['tag']);
         $item->set('foobar');
         $this->cache->save($item);
@@ -139,6 +186,12 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testSaveDeferred()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key', ['tag']);
         $item->set('foobar');
         $this->cache->saveDeferred($item);
@@ -164,6 +217,12 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testKeysWithDeferred()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key', ['tag']);
         $item->set('foobar');
         $this->cache->saveDeferred($item);
@@ -181,6 +240,12 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function testClearInvalidKeys($key)
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $this->cache->clear([$key]);
     }
 
@@ -190,6 +255,12 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetItemInvalidKeys($key)
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $this->cache->getItem('key', [$key]);
     }
 
@@ -199,6 +270,12 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetItemsInvalidKeys($key)
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $this->cache->getItems(['key'], [$key]);
     }
 
@@ -208,6 +285,12 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function testHasItemInvalidKeys($key)
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $this->cache->hasItem($key);
     }
 
@@ -217,6 +300,12 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function testDeleteItemInvalidKeys($key)
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $this->cache->deleteItem('key', [$key]);
     }
 
@@ -226,6 +315,12 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function testDeleteItemsInvalidKeys($key)
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $this->cache->deleteItems(['key'], [$key]);
     }
 }
