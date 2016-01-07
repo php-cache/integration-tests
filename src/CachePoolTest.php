@@ -17,6 +17,11 @@ use Psr\Cache\CacheItemPoolInterface;
 abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var array with functionName => reason.
+     */
+    protected $skippedTests = [];
+
+    /**
      * @type CacheItemPoolInterface
      */
     private $cache;
@@ -68,6 +73,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testBasicUsage()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('4711');
         $this->cache->save($item);
@@ -97,6 +108,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testGetItem()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('value');
         $this->cache->save($item);
@@ -114,6 +131,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testGetItems()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $keys  = ['foo', 'bar', 'baz'];
         $items = $this->cache->getItems($keys);
         $this->assertCount(3, $items);
@@ -146,6 +169,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testGetItemsEmpty()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $items = $this->cache->getItems([]);
         $this->assertCount(0, $items);
         $this->assertTrue(is_array($items) || $items instanceof \Traversable, 'A call to getItems with an empty array must always return an array or \Traversable.');
@@ -153,6 +182,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testHasItem()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('value');
         $this->cache->save($item);
@@ -166,6 +201,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testClear()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('value');
         $this->cache->save($item);
@@ -179,6 +220,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testClearWithDeferredItems()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('value');
         $this->cache->saveDeferred($item);
@@ -191,6 +238,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testDeleteItem()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('value');
         $this->cache->save($item);
@@ -204,6 +257,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testDeleteItems()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $items = $this->cache->getItems(['foo', 'bar', 'baz']);
 
         /** @type CacheItemInterface $item */
@@ -229,6 +288,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testSave()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('value');
         $return = $this->cache->save($item);
@@ -239,6 +304,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testDeferredSave()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('4711');
         $this->cache->saveDeferred($item);
@@ -261,6 +332,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testDeleteDeferredItem()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('4711');
         $this->cache->saveDeferred($item);
@@ -275,6 +352,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testDeferredSaveWithoutCommit()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('4711');
         $this->cache->saveDeferred($item);
@@ -287,6 +370,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testCommit()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('value');
         $this->cache->saveDeferred($item);
@@ -301,6 +390,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testExpiration()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('value');
         // Expire after 2 seconds
@@ -315,6 +410,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testExpiresAt()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('value');
         $item->expiresAt(new \DateTime('+2hours'));
@@ -326,6 +427,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testExpiresAtWithNull()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('value');
         $item->expiresAt(null);
@@ -337,6 +444,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testExpiresAfterWithNull()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('value');
         $item->expiresAt(null);
@@ -348,6 +461,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testKeyLength()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $key  = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.';
         $item = $this->cache->getItem($key);
         $item->set('value');
@@ -362,6 +481,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetItemInvalidKeys($key)
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $this->cache->getItem($key);
     }
 
@@ -371,6 +496,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetItemsInvalidKeys($key)
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $this->cache->getItems(['key1', $key, 'key2']);
     }
 
@@ -380,6 +511,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function testHasItemInvalidKeys($key)
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $this->cache->hasItem($key);
     }
 
@@ -389,6 +526,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function testDeleteItemInvalidKeys($key)
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $this->cache->deleteItem($key);
     }
 
@@ -398,11 +541,23 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function testDeleteItemsInvalidKeys($key)
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $this->cache->deleteItems(['key1', $key, 'key2']);
     }
 
     public function testDataTypeString()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('5');
         $this->cache->save($item);
@@ -414,6 +569,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testDataTypeInteger()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set(5);
         $this->cache->save($item);
@@ -425,6 +586,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testDataTypeNull()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set(null);
         $this->cache->save($item);
@@ -438,6 +605,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testIsHit()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('value');
         $this->cache->save($item);
@@ -449,6 +622,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testIsHitDeferred()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('value');
         $this->cache->saveDeferred($item);
@@ -465,6 +644,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testSaveDeferredWhenChangingValues()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('value');
         $this->cache->saveDeferred($item);
@@ -482,6 +667,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testSaveDeferredOverwrite()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set('value');
         $this->cache->saveDeferred($item);
@@ -500,6 +691,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testSavingObject()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('key');
         $item->set(new \DateTime());
         $this->cache->save($item);
