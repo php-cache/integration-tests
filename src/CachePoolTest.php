@@ -603,6 +603,82 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($item->isHit(), 'Null is a perfectly fine cache value. isHit() should return true when null are stored. ');
     }
 
+    public function testDataTypeFloat()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        $float = 1.23456789;
+        $item  = $this->cache->getItem('key');
+        $item->set($float);
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('key');
+        $this->assertTrue(is_float($item->get()), 'Wrong data type. If we store float we must get an float back.');
+        $this->assertEquals($float, $item->get());
+        $this->assertTrue($item->isHit(), 'Null is a perfectly fine cache value. isHit() should return true when null are stored. ');
+    }
+
+    public function testDataTypeBoolean()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        $item  = $this->cache->getItem('key');
+        $item->set(true);
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('key');
+        $this->assertTrue(is_bool($item->get()), 'Wrong data type. If we store boolean we must get an boolean back.');
+        $this->assertTrue($item->get());
+        $this->assertTrue($item->isHit(), 'Null is a perfectly fine cache value. isHit() should return true when null are stored. ');
+    }
+
+    public function testDataTypeArray()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        $array = ['a' => 'foo', 2 => 'bar'];
+        $item  = $this->cache->getItem('key');
+        $item->set($array);
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('key');
+        $this->assertTrue(is_array($item->get()), 'Wrong data type. If we store array we must get an array back.');
+        $this->assertEquals($array, $item->get());
+        $this->assertTrue($item->isHit(), 'Null is a perfectly fine cache value. isHit() should return true when null are stored. ');
+    }
+
+    public function testDataTypeObject()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        $object    = new \stdClass();
+        $object->a = 'foo';
+        $item      = $this->cache->getItem('key');
+        $item->set($object);
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('key');
+        $this->assertTrue(is_object($item->get()), 'Wrong data type. If we store array we must get an array back.');
+        $this->assertEquals($object, $item->get());
+        $this->assertTrue($item->isHit(), 'Null is a perfectly fine cache value. isHit() should return true when null are stored. ');
+    }
+
     public function testIsHit()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
