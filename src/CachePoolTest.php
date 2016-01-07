@@ -616,7 +616,6 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item->set($float);
         $this->cache->save($item);
 
-        $this->assertTrue($this->cache->hasItem('key'), 'Null is a perfectly fine cache value. hasItem() should return true when null are stored. ');
         $item = $this->cache->getItem('key');
         $this->assertTrue(is_float($item->get()), 'Wrong data type. If we store float we must get an float back.');
         $this->assertEquals($float, $item->get());
@@ -635,7 +634,6 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item->set(true);
         $this->cache->save($item);
 
-        $this->assertTrue($this->cache->hasItem('key'), 'Null is a perfectly fine cache value. hasItem() should return true when null are stored. ');
         $item = $this->cache->getItem('key');
         $this->assertTrue(is_bool($item->get()), 'Wrong data type. If we store boolean we must get an boolean back.');
         $this->assertTrue($item->get());
@@ -655,7 +653,6 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item->set($array);
         $this->cache->save($item);
 
-        $this->assertTrue($this->cache->hasItem('key'), 'Null is a perfectly fine cache value. hasItem() should return true when null are stored. ');
         $item = $this->cache->getItem('key');
         $this->assertTrue(is_array($item->get()), 'Wrong data type. If we store array we must get an array back.');
         $this->assertEquals($array, $item->get());
@@ -676,7 +673,6 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item->set($object);
         $this->cache->save($item);
 
-        $this->assertTrue($this->cache->hasItem('key'), 'Null is a perfectly fine cache value. hasItem() should return true when null are stored. ');
         $item = $this->cache->getItem('key');
         $this->assertTrue(is_object($item->get()), 'Wrong data type. If we store array we must get an array back.');
         $this->assertEquals($object, $item->get());
