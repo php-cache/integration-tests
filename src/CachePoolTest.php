@@ -612,7 +612,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $float = 1.23456789;
-        $item = $this->cache->getItem('key');
+        $item  = $this->cache->getItem('key');
         $item->set($float);
         $this->cache->save($item);
 
@@ -630,7 +630,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $item = $this->cache->getItem('key');
+        $item  = $this->cache->getItem('key');
         $item->set(true);
         $this->cache->save($item);
 
@@ -649,7 +649,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $array = ['a' => 'foo', 2 => 'bar'];
-        $item = $this->cache->getItem('key');
+        $item  = $this->cache->getItem('key');
         $item->set($array);
         $this->cache->save($item);
 
@@ -667,9 +667,9 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $object = new \stdClass();
+        $object    = new \stdClass();
         $object->a = 'foo';
-        $item = $this->cache->getItem('key');
+        $item      = $this->cache->getItem('key');
         $item->set($object);
         $this->cache->save($item);
 
