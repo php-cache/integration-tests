@@ -17,7 +17,7 @@ use Psr\Cache\CacheItemPoolInterface;
 abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var array with functionName => reason.
+     * @type array with functionName => reason.
      */
     protected $skippedTests = [];
 
