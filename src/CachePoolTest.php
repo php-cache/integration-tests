@@ -312,7 +312,8 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
         $item = $this->cache->getItem('key');
         $item->set('4711');
-        $this->cache->saveDeferred($item);
+        $return = $this->cache->saveDeferred($item);
+        $this->assertTrue($return, 'save() should return true when items are saved.');
 
         $item = $this->cache->getItem('key2');
         $item->set('4712');
