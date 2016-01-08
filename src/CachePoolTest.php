@@ -302,6 +302,21 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('value', $this->cache->getItem('key')->get());
     }
 
+    public function testSaveWithNoData()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        $item = $this->cache->getItem('key');
+        $this->cache->save($item);
+
+        $this->assertTrue($this->cache->hasItem('key'), 'A saved item with no data should still be a hit.');
+        $this->assertTrue($this->cache->getItem('key')->isHit(), 'A saved item with no data should still be a hit.');
+    }
+
     public function testDeferredSave()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
