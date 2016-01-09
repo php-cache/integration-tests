@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of php-cache\apc-adapter package.
+ * This file is part of php-cache\integration-tests package.
  *
  * (c) 2015-2015 Aaron Scherer <aequasi@gmail.com>, Tobias Nyholm <tobias.nyholm@gmail.com>
  *
@@ -11,7 +11,6 @@
 
 namespace Cache\IntegrationTests;
 
-use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**
@@ -54,16 +53,104 @@ abstract class HierarchicalCachePoolTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $pool = $this->createCachePool();
         $user = 4711;
         for ($i = 0; $i < 10; $i++) {
-            $item = $pool->getItem(sprintf('|users|%d|followers|%d|likes', $user, $i), ['user']);
+            $item = $this->cache->getItem(sprintf('|users|%d|followers|%d|likes', $user, $i));
             $item->set('Justin Bieber');
-            $pool->save($item);
+            $this->cache->save($item);
         }
 
-        $this->assertTrue($pool->hasItem('|users|4711|followers|4|likes', ['user']));
-        $pool->deleteItem('|users|4711|followers', ['user']);
-        $this->assertFalse($pool->hasItem('|users|4711|followers|4|likes', ['user']));
+        $this->assertTrue($this->cache->hasItem('|users|4711|followers|4|likes'));
+        $this->cache->deleteItem('|users|4711|followers');
+        $this->assertFalse($this->cache->hasItem('|users|4711|followers|4|likes'));
+    }
+
+    public function testBasicUsageWithTags()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        $user = 4711;
+        for ($i = 0; $i < 10; $i++) {
+            $item = $this->cache->getItem(sprintf('|users|%d|followers|%d|likes', $user, $i), ['user']);
+            $item->set('Justin Bieber');
+            $this->cache->save($item);
+        }
+
+        $this->assertTrue($this->cache->hasItem('|users|4711|followers|4|likes', ['user']));
+        $this->cache->deleteItem('|users|4711|followers', ['user']);
+        $this->assertFalse($this->cache->hasItem('|users|4711|followers|4|likes', ['user']));
+    }
+
+    public function testChain()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        $item = $this->cache->getItem('|aaa|bbb|ccc|ddd');
+        $item->set('value');
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('|aaa|bbb|ccc|xxx');
+        $item->set('value');
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('|aaa|bbb|zzz|ddd');
+        $item->set('value');
+        $this->cache->save($item);
+
+        $this->assertTrue($this->cache->hasItem('|aaa|bbb|ccc|ddd'));
+        $this->assertTrue($this->cache->hasItem('|aaa|bbb|ccc|xxx'));
+        $this->assertTrue($this->cache->hasItem('|aaa|bbb|zzz|ddd'));
+        $this->assertFalse($this->cache->hasItem('|aaa|bbb|ccc'));
+        $this->assertFalse($this->cache->hasItem('|aaa|bbb|zzz'));
+        $this->assertFalse($this->cache->hasItem('|aaa|bbb'));
+        $this->assertFalse($this->cache->hasItem('|aaa'));
+        $this->assertFalse($this->cache->hasItem('|'));
+
+        // This is a different thing
+        $this->cache->deleteItem('|aaa|bbb|cc');
+        $this->assertTrue($this->cache->hasItem('|aaa|bbb|ccc|ddd'));
+        $this->assertTrue($this->cache->hasItem('|aaa|bbb|ccc|xxx'));
+        $this->assertTrue($this->cache->hasItem('|aaa|bbb|zzz|ddd'));
+
+        $this->cache->deleteItem('|aaa|bbb|ccc');
+        $this->assertFalse($this->cache->hasItem('|aaa|bbb|ccc|ddd'));
+        $this->assertFalse($this->cache->hasItem('|aaa|bbb|ccc|xxx'));
+        $this->assertTrue($this->cache->hasItem('|aaa|bbb|zzz|ddd'));
+
+        $this->cache->deleteItem('|aaa');
+        $this->assertFalse($this->cache->hasItem('|aaa|bbb|zzz|ddd'));
+    }
+
+    public function testTagRemoval()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        $item = $this->cache->getItem('|aaa|bbb', ['tag1']);
+        $item->set('value');
+        $this->cache->save($item);
+
+        $this->cache->deleteItem('|aaa|bbb', ['tag2']);
+        $this->assertTrue($this->cache->hasItem('|aaa|bbb', ['tag1']));
+
+        $this->cache->deleteItem('|aaa|bbb');
+        $this->assertTrue($this->cache->hasItem('|aaa|bbb', ['tag1']));
+
+        $this->cache->deleteItem('|aaa', ['tag2']);
+        $this->assertTrue($this->cache->hasItem('|aaa|bbb', ['tag1']));
+
+        $this->cache->deleteItem('|aaa');
+        $this->assertTrue($this->cache->hasItem('|aaa|bbb', ['tag1']));
     }
 }
