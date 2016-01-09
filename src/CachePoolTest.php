@@ -366,7 +366,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache = null;
 
         $cache = $this->createCachePool();
-        $this->assertTrue($cache->getItem('key')->isHit(), 'A deferred item should automitaically be committed on CachePool::__destruct().');
+        $this->assertTrue($cache->getItem('key')->isHit(), 'A deferred item should automatically be committed on CachePool::__destruct().');
     }
 
     public function testCommit()
