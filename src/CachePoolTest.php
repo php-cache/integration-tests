@@ -106,6 +106,20 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->cache->getItem('key2')->isHit());
     }
 
+    public function testItemModifiersReturnsStatic()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        $item = $this->cache->getItem('key');
+        $this->assertSame($item, $item->set('4711'));
+        $this->assertSame($item, $item->expiresAfter(2));
+        $this->assertSame($item, $item->expiredAt(new \DateTime('+2hours')));
+    }
+
     public function testGetItem()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
