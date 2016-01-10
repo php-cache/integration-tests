@@ -117,7 +117,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item = $this->cache->getItem('key');
         $this->assertSame($item, $item->set('4711'));
         $this->assertSame($item, $item->expiresAfter(2));
-        $this->assertSame($item, $item->expiredAt(new \DateTime('+2hours')));
+        $this->assertSame($item, $item->expiresAt(new \DateTime('+2hours')));
     }
 
     public function testGetItem()
