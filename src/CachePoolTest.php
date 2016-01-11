@@ -324,7 +324,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $item = $this->cache->getItem('key');
+        $item   = $this->cache->getItem('key');
         $return = $this->cache->save($item);
 
         $this->assertFalse($return, 'When saving an object with no data, we should generate an error.');
