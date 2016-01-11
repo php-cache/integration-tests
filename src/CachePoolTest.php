@@ -311,10 +311,11 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $item = $this->cache->getItem('key');
-        $this->cache->save($item);
+        $return = $this->cache->save($item);
 
-        $this->assertTrue($this->cache->hasItem('key'), 'A saved item with no data should still be a hit.');
-        $this->assertTrue($this->cache->getItem('key')->isHit(), 'A saved item with no data should still be a hit.');
+        $this->assertFalse($return, 'When saving an object with no data, we should generate an error.');
+        $this->assertFalse($this->cache->hasItem('key'), 'A saved item with no data should not be a hit.');
+        $this->assertFalse($this->cache->getItem('key')->isHit(), 'A saved item with no data should not be a hit.');
     }
 
     public function testDeferredSave()
