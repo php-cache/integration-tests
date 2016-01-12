@@ -192,6 +192,5 @@ abstract class HierarchicalCachePoolTest extends \PHPUnit_Framework_TestCase
 
         $this->cache->commit();
         $this->assertFalse($this->cache->hasItem('|aaa|bbb'), 'Deferred hierarchy items should be removed');
-
     }
 }
