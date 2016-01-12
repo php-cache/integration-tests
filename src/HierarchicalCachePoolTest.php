@@ -153,4 +153,44 @@ abstract class HierarchicalCachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache->deleteItem('|aaa');
         $this->assertTrue($this->cache->hasItem('|aaa|bbb', ['tag1']));
     }
+
+    public function testRemoval()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        $item = $this->cache->getItem('foo');
+        $item->set('value');
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('|aaa|bbb');
+        $item->set('value');
+        $this->cache->save($item);
+
+        $this->cache->deleteItem('|');
+        $this->assertFalse($this->cache->hasItem('|aaa|bbb'), 'Hierarchy items should be removed when deleting root');
+        $this->assertTrue($this->cache->hasItem('foo'), 'All cache should not be cleared when deleting root');
+    }
+
+    public function testRemovalWhenDeferred()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        $item = $this->cache->getItem('|aaa|bbb');
+        $item->set('value');
+        $this->cache->saveDeferred($item);
+
+        $this->cache->deleteItem('|');
+        $this->assertFalse($this->cache->hasItem('|aaa|bbb'), 'Deferred hierarchy items should be removed');
+
+        $this->cache->commit();
+        $this->assertFalse($this->cache->hasItem('|aaa|bbb'), 'Deferred hierarchy items should be removed');
+    }
 }
