@@ -316,6 +316,23 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('value', $this->cache->getItem('key')->get());
     }
 
+    public function testSaveExpired()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        $item   = $this->cache->getItem('key');
+        $item->set('value');
+        $item->expiresAt(new \DateTime('now'));
+        sleep(1);
+        $this->cache->save($item);
+        $item = $this->cache->getItem('key');
+        $this->assertFalse($item->isHit(), 'Cache should not save expired items');
+    }
+
     public function testDeferredSave()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -343,6 +360,27 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         // They should be a hit after the commit as well
         $this->assertTrue($this->cache->getItem('key')->isHit());
         $this->assertTrue($this->cache->getItem('key2')->isHit());
+    }
+
+    public function testDeferredExpired()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        $item = $this->cache->getItem('key');
+        $item->set('4711');
+        $item->expiresAt(new \DateTime('now'));
+        $return = $this->cache->saveDeferred($item);
+        sleep(1);
+
+        $this->assertFalse($this->cache->hasItem('key'), 'Cache should not have expired deferred item');
+        $this->cache->commit();
+        $item = $this->cache->getItem('key');
+        $this->assertFalse($item->isHit(), 'Cache should not save expired items');
+
     }
 
     public function testDeleteDeferredItem()
