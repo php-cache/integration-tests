@@ -380,7 +380,6 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache->commit();
         $item = $this->cache->getItem('key');
         $this->assertFalse($item->isHit(), 'Cache should not save expired items');
-
     }
 
     public function testDeleteDeferredItem()
