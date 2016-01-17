@@ -33,12 +33,12 @@ abstract class HierarchicalCachePoolTest extends \PHPUnit_Framework_TestCase
      */
     abstract public function createCachePool();
 
-    public function setUp()
+    protected function setUp()
     {
         $this->cache = $this->createCachePool();
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         if ($this->cache !== null) {
             $this->cache->clear();
