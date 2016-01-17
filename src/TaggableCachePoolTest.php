@@ -31,7 +31,7 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
      */
     abstract public function createCachePool();
 
-    public function setUp()
+    protected function setUp()
     {
         $this->cache = $this->createCachePool();
     }
