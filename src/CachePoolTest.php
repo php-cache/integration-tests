@@ -316,22 +316,6 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('value', $this->cache->getItem('key')->get());
     }
 
-    public function testSaveWithNoData()
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
-        }
-
-        $item   = $this->cache->getItem('key');
-        $return = $this->cache->save($item);
-
-        $this->assertFalse($return, 'When saving an object with no data, we should generate an error.');
-        $this->assertFalse($this->cache->hasItem('key'), 'A saved item with no data should not be a hit.');
-        $this->assertFalse($this->cache->getItem('key')->isHit(), 'A saved item with no data should not be a hit.');
-    }
-
     public function testDeferredSave()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -350,8 +334,8 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache->saveDeferred($item);
 
         // They are not saved yet but should be a hit
-        $this->assertTrue($this->cache->getItem('key')->isHit(), 'Deferred items should be a hit even before they are committed');
         $this->assertTrue($this->cache->hasItem('key'), 'Deferred items should be considered as a part of the cache even before they are committed');
+        $this->assertTrue($this->cache->getItem('key')->isHit(), 'Deferred items should be a hit even before they are committed');
         $this->assertTrue($this->cache->getItem('key2')->isHit());
 
         $this->cache->commit();
@@ -375,9 +359,11 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->cache->getItem('key')->isHit());
 
         $this->cache->deleteItem('key');
+        $this->assertFalse($this->cache->hasItem('key'), 'You must be able to delete a deferred item before committed. ');
         $this->assertFalse($this->cache->getItem('key')->isHit(), 'You must be able to delete a deferred item before committed. ');
 
         $this->cache->commit();
+        $this->assertFalse($this->cache->hasItem('key'), 'A deleted item should not reappear after commit. ');
         $this->assertFalse($this->cache->getItem('key')->isHit(), 'A deleted item should not reappear after commit. ');
     }
 
@@ -394,6 +380,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache->saveDeferred($item);
 
         $this->cache = null;
+        gc_collect_cycles();
 
         $cache = $this->createCachePool();
         $this->assertTrue($cache->getItem('key')->isHit(), 'A deferred item should automatically be committed on CachePool::__destruct().');
@@ -721,7 +708,6 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item = $this->cache->getItem('key');
         $item->set('value');
         $this->cache->save($item);
-        $this->assertTrue($item->isHit());
 
         $item = $this->cache->getItem('key');
         $this->assertTrue($item->isHit());
@@ -738,7 +724,6 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item = $this->cache->getItem('key');
         $item->set('value');
         $this->cache->saveDeferred($item);
-        $this->assertTrue($item->isHit());
 
         // Test accessing the value before it is committed
         $item = $this->cache->getItem('key');
