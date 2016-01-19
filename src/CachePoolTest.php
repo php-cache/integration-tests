@@ -153,19 +153,23 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
         $keys  = ['foo', 'bar', 'baz'];
         $items = $this->cache->getItems($keys);
-        $this->assertCount(3, $items);
+
+        $count = 0;
 
         /** @type CacheItemInterface $item */
         foreach ($items as $i => $item) {
             $item->set($i);
             $this->cache->save($item);
+
+            $count++;
         }
+
+        $this->assertSame(3, $count);
 
         $keys[] = 'biz';
         /** @type CacheItemInterface[] $items */
-        $items  = $this->cache->getItems($keys);
-        $this->assertCount(4, $items);
-
+        $items = $this->cache->getItems($keys);
+        $count = 0;
         foreach ($items as $key => $item) {
             $itemKey = $item->getKey();
             $this->assertEquals($itemKey, $key, 'Keys must be preserved when fetching multiple items');
@@ -178,7 +182,11 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
                     unset($keys[$k]);
                 }
             }
+
+            $count++;
         }
+
+        $this->assertSame(4, $count);
     }
 
     public function testGetItemsEmpty()
@@ -190,8 +198,17 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $items = $this->cache->getItems([]);
-        $this->assertCount(0, $items);
-        $this->assertTrue(is_array($items) || $items instanceof \Traversable, 'A call to getItems with an empty array must always return an array or \Traversable.');
+        $this->assertTrue(
+            is_array($items) || $items instanceof \Traversable,
+            'A call to getItems with an empty array must always return an array or \Traversable.'
+        );
+
+        $count = 0;
+        foreach ($items as $item) {
+            $count++;
+        }
+
+        $this->assertSame(0, $count);
     }
 
     public function testHasItem()
