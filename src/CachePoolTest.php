@@ -814,4 +814,24 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $value = $item->get();
         $this->assertInstanceOf('\DateTime', $value, 'You must be able to store objects in cache.');
     }
+
+    public function testExpiredDeferredItemOnHasItemAndSave()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        $item = $this->cache->getItem('key')
+            ->set('one direction')
+            ->expiresAfter(1);
+
+        sleep(2);
+        $this->assertFalse($this->cache->save($item), 'save should return false as Item has expired between setExpires and save');
+
+        // its expired by this point
+        $this->cache->saveDeferred($item);
+        $this->assertFalse($this->cache->hasItem('key'), 'hasItem should return false on expired deferred items');
+    }
 }
