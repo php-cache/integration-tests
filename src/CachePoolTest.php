@@ -341,13 +341,29 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $item   = $this->cache->getItem('key');
+        $item = $this->cache->getItem('key');
         $item->set('value');
         $item->expiresAt(new \DateTime('now'));
         sleep(1);
         $this->cache->save($item);
         $item = $this->cache->getItem('key');
         $this->assertFalse($item->isHit(), 'Cache should not save expired items');
+    }
+
+    public function testSaveWithoutExpire()
+    {
+        $item = $this->cache->getItem('test_ttl_null');
+        $item->set('data');
+        $this->cache->save($item);
+
+        sleep(1);
+
+        // Use a new pool instance to ensure that we don't it any caches
+        $pool = $this->createCachePool();
+        $item = $pool->getItem('test_ttl_null');
+
+        $this->assertTrue($item->isHit(), 'Cache should have retrieved the items');
+        $this->assertEquals('data', $item->get());
     }
 
     public function testDeferredSave()
