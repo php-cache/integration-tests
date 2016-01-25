@@ -866,7 +866,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $item = $this->cache->getItem('key');
-        $item->set(\DateTime::createFromFormat('U', time()));
+        $item->set(new \DateTime());
         $this->cache->save($item);
 
         $item  = $this->cache->getItem('key');
