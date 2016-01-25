@@ -343,7 +343,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
         $item = $this->cache->getItem('key');
         $item->set('value');
-        $item->expiresAt(new \DateTime('now'));
+        $item->expiresAt(\DateTime::createFromFormat('U', time()));
         sleep(1);
         $this->cache->save($item);
         $item = $this->cache->getItem('key');
@@ -352,6 +352,12 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testSaveWithoutExpire()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $item = $this->cache->getItem('test_ttl_null');
         $item->set('data');
         $this->cache->save($item);
@@ -405,7 +411,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
         $item = $this->cache->getItem('key');
         $item->set('4711');
-        $item->expiresAt(new \DateTime('now'));
+        $item->expiresAt(\DateTime::createFromFormat('U', time()));
         $return = $this->cache->saveDeferred($item);
         sleep(1);
 
@@ -860,11 +866,11 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $item = $this->cache->getItem('key');
-        $item->set(new \DateTime());
+        $item->set(\DateTime::createFromFormat('U', time()));
         $this->cache->save($item);
 
         $item  = $this->cache->getItem('key');
         $value = $item->get();
-        $this->assertInstanceOf('\DateTime', $value, 'You must be able to store objects in cache.');
+        $this->assertInstanceOf('DateTime', $value, 'You must be able to store objects in cache.');
     }
 }
