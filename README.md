@@ -1,4 +1,4 @@
-# PSR-6 Integration tests 
+# PSR-6 Integration tests ![Logo](https://raw.githubusercontent.com/php-cache/documentation/master/logos/php-cache-logo-64.png)
 
 To make sure your implementation of PSR-6 is correct you should use this test suite. 
 
