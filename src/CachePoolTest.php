@@ -344,8 +344,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item = $this->cache->getItem('key');
         $item->set('value');
         $item->expiresAt(\DateTime::createFromFormat('U', time()));
-        sleep(1);
-        $this->cache->save($item);
+        $this->assertFalse($this->cache->save($item), 'Cache should not save expired items');
         $item = $this->cache->getItem('key');
         $this->assertFalse($item->isHit(), 'Cache should not save expired items');
     }
@@ -361,8 +360,6 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item = $this->cache->getItem('test_ttl_null');
         $item->set('data');
         $this->cache->save($item);
-
-        sleep(1);
 
         // Use a new pool instance to ensure that we don't it any caches
         $pool = $this->createCachePool();
@@ -412,9 +409,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item = $this->cache->getItem('key');
         $item->set('4711');
         $item->expiresAt(\DateTime::createFromFormat('U', time()));
-        $return = $this->cache->saveDeferred($item);
-        sleep(1);
-
+        $this->assertFalse($this->cache->saveDeferred($item));
         $this->assertFalse($this->cache->hasItem('key'), 'Cache should not have expired deferred item');
         $this->cache->commit();
         $item = $this->cache->getItem('key');
@@ -492,11 +487,10 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
         $item = $this->cache->getItem('key');
         $item->set('value');
-        // Expire after 2 seconds
         $item->expiresAfter(2);
         $this->cache->save($item);
 
-        sleep(4);
+        sleep(2);
         $item = $this->cache->getItem('key');
         $this->assertFalse($item->isHit());
         $this->assertNull($item->get(), "Item's value must be null when isHit() is false.");
