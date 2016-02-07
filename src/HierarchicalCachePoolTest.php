@@ -65,26 +65,6 @@ abstract class HierarchicalCachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->cache->hasItem('|users|4711|followers|4|likes'));
     }
 
-    public function testBasicUsageWithTags()
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
-        }
-
-        $user = 4711;
-        for ($i = 0; $i < 10; $i++) {
-            $item = $this->cache->getItem(sprintf('|users|%d|followers|%d|likes', $user, $i), ['user']);
-            $item->set('Justin Bieber');
-            $this->cache->save($item);
-        }
-
-        $this->assertTrue($this->cache->hasItem('|users|4711|followers|4|likes', ['user']));
-        $this->cache->deleteItem('|users|4711|followers', ['user']);
-        $this->assertFalse($this->cache->hasItem('|users|4711|followers|4|likes', ['user']));
-    }
-
     public function testChain()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -127,31 +107,6 @@ abstract class HierarchicalCachePoolTest extends \PHPUnit_Framework_TestCase
 
         $this->cache->deleteItem('|aaa');
         $this->assertFalse($this->cache->hasItem('|aaa|bbb|zzz|ddd'));
-    }
-
-    public function testTagRemoval()
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
-        }
-
-        $item = $this->cache->getItem('|aaa|bbb', ['tag1']);
-        $item->set('value');
-        $this->cache->save($item);
-
-        $this->cache->deleteItem('|aaa|bbb', ['tag2']);
-        $this->assertTrue($this->cache->hasItem('|aaa|bbb', ['tag1']));
-
-        $this->cache->deleteItem('|aaa|bbb');
-        $this->assertTrue($this->cache->hasItem('|aaa|bbb', ['tag1']));
-
-        $this->cache->deleteItem('|aaa', ['tag2']);
-        $this->assertTrue($this->cache->hasItem('|aaa|bbb', ['tag1']));
-
-        $this->cache->deleteItem('|aaa');
-        $this->assertTrue($this->cache->hasItem('|aaa|bbb', ['tag1']));
     }
 
     public function testRemoval()
