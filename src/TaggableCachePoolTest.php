@@ -12,7 +12,6 @@
 namespace Cache\IntegrationTests;
 
 use Cache\Taggable\TaggablePoolInterface;
-use Psr\Cache\CacheItemPoolInterface;
 
 abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
 {
@@ -22,7 +21,7 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
     protected $skippedTests = [];
 
     /**
-     * @type CacheItemPoolInterface|TaggablePoolInterface
+     * @type TaggablePoolInterface
      */
     private $cache;
 
@@ -38,12 +37,9 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
 
     protected function tearDown()
     {
-        $this->cache->clear();
-    }
-
-    public function invalidKeys()
-    {
-        return CachePoolTest::invalidKeys();
+        if ($this->cache !== null) {
+            $this->cache->clear();
+        }
     }
 
     public function testBasicUsage()
@@ -54,52 +50,22 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $item = $this->cache->getItem('tobias', ['developer', 'speaker']);
-        $item->set('foobar');
-        $this->cache->save($item);
-
-        $item = $this->cache->getItem('aaron', ['developer', 'nice guy']);
-        $item->set('foobar');
-        $this->cache->save($item);
-
-        $item = $this->cache->getItem('the king of Sweden', ['nice guy', 'king']);
-        $item->set('foobar');
-        $this->cache->save($item);
-
-        $this->assertTrue($this->cache->getItem('tobias', ['developer', 'speaker'])->isHit());
-        $this->assertTrue($this->cache->getItem('tobias', ['speaker', 'developer'])->isHit());
-        $this->assertFalse($this->cache->getItem('tobias', ['developer'])->isHit());
-        $this->assertFalse($this->cache->getItem('tobias', ['king'])->isHit());
-        $this->assertFalse($this->cache->getItem('tobias')->isHit());
-
-        // Remove everything tagged with 'nice guy'
-        $this->cache->clear(['nice guy']);
-        $this->assertTrue($this->cache->getItem('tobias', ['developer', 'speaker'])->isHit());
-        $this->assertFalse($this->cache->getItem('aaron', ['developer', 'nice guy'])->isHit());
-        $this->assertFalse($this->cache->getItem('the king of Sweden', ['nice guy', 'king'])->isHit());
-
-        // To clear everything you do as you usually do
-        $this->cache->clear();
-        $this->assertFalse($this->cache->getItem('tobias', ['developer', 'speaker'])->isHit());
-    }
-
-    public function testGetItem()
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
-        }
-
-        $item = $this->cache->getItem('tobias', ['developer', 'speaker']);
+        $item = $this->cache->getItem('key');
         $item->set('value');
+        $item->setTags(['tag1', 'tag2']);
         $this->cache->save($item);
 
-        $item = $this->cache->getItem('tobias', ['developer']);
-        $this->assertFalse($item->isHit(), 'There should be no item with key "tobias" and tag "developer"');
+        // The item should be saved
+        $this->assertTrue($this->cache->hasItem('key'));
+
+        // I want to clear all post by author
+        $this->cache->clearTags(['tag1']);
+
+        // The item should be removed
+        $this->assertFalse($this->cache->hasItem('key'));
     }
 
-    public function testGetItems()
+    public function testMultipleTags()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
@@ -107,52 +73,25 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $item = $this->cache->getItem('tobias', ['developer']);
-        $item->set('value');
-        $this->cache->save($item);
+        $this->cache->save($this->cache->getItem('key1')->set('value')->setTags(['tag1', 'tag2']));
+        $this->cache->save($this->cache->getItem('key2')->set('value')->setTags(['tag1', 'tag3']));
+        $this->cache->save($this->cache->getItem('key3')->set('value')->setTags(['tag2', 'tag3']));
+        $this->cache->save($this->cache->getItem('key4')->set('value')->setTags(['tag4', 'tag3']));
 
-        $items = $this->cache->getItems(['tobias', 'aaron'], ['developer']);
-        $this->assertCount(2, $items);
-        $this->assertTrue($items['tobias']->isHit());
-        $this->assertFalse($items['aaron']->isHit());
+        $this->cache->clearTags(['tag1']);
+        $this->assertFalse($this->cache->hasItem('key1'));
+        $this->assertFalse($this->cache->hasItem('key2'));
+        $this->assertTrue($this->cache->hasItem('key3'));
+        $this->assertTrue($this->cache->hasItem('key4'));
+
+        $this->cache->clearTags(['tag2']);
+        $this->assertFalse($this->cache->hasItem('key1'));
+        $this->assertFalse($this->cache->hasItem('key2'));
+        $this->assertFalse($this->cache->hasItem('key3'));
+        $this->assertTrue($this->cache->hasItem('key4'));
     }
 
-    public function testHasItem()
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
-        }
-
-        $item = $this->cache->getItem('tobias', ['developer']);
-        $item->set('value');
-        $this->cache->save($item);
-
-        $this->assertTrue($this->cache->hasItem('tobias', ['developer']));
-        $this->assertFalse($this->cache->hasItem('aaron', ['developer']));
-    }
-
-    public function testDeleteItem()
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
-        }
-
-        $item = $this->cache->getItem('tobias', ['developer', 'speaker']);
-        $item->set('foobar');
-        $this->cache->save($item);
-
-        $this->cache->deleteItem('tobias', ['developer']);
-        $this->assertTrue($this->cache->getItem('tobias', ['developer', 'speaker'])->isHit());
-
-        $this->cache->deleteItem('tobias', ['developer', 'speaker']);
-        $this->assertFalse($this->cache->getItem('tobias', ['developer', 'speaker'])->isHit());
-    }
-
-    public function testNoKeyModificationWhenNoTags()
+    public function testTagAccessor()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
@@ -161,30 +100,47 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $item = $this->cache->getItem('key');
-        $item->set('foobar');
-        $this->cache->save($item);
+        $item->setTags(['tag1', 'tag2']);
+        $item->addTag('tag3');
+
+        $tags = $item->getTags();
+        $this->assertCount(3, $tags);
+        $this->assertTrue(in_array('tag1', $tags));
+        $this->assertTrue(in_array('tag2', $tags));
+        $this->assertTrue(in_array('tag3', $tags));
+
+        $item->setTags(['tag4']);
+        $tags = $item->getTags();
+        $this->assertCount(1, $tags);
+        $this->assertFalse(in_array('tag1', $tags));
+        $this->assertTrue(in_array('tag4', $tags));
+    }
+
+    public function testRemoveTagWhenItemIsRemoved()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
 
         $item = $this->cache->getItem('key');
-        $this->assertEquals('key', $item->getKey(), 'Key can not change when using no tags');
-    }
+        $item->setTags(['tag1']);
 
-    public function testKeysShouldAppearUnchanged()
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        // Save the item and then delete it
+        $this->cache->save($item);
+        $this->cache->deleteItem('key');
 
-            return;
-        }
-
-        $item = $this->cache->getItem('key', ['tag']);
-        $item->set('foobar');
+        // Create a new item (no tags)
+        $item = $this->cache->getItem('key');
         $this->cache->save($item);
 
-        $item = $this->cache->getItem('key', ['tag']);
-        $this->assertEquals('key', $item->getKey(), 'Key should appear intact even when using tags');
+        // Clear the tag
+        $this->cache->clearTags(['tag1']);
+        $this->assertTrue($this->cache->hasItem('key'), 'Item key should be removed from the tag list when the item is removed');
     }
 
-    public function testSaveDeferred()
+    public function testClear()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
@@ -192,53 +148,21 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $item = $this->cache->getItem('key', ['tag']);
-        $item->set('foobar');
-        $this->cache->saveDeferred($item);
-
-        $item = $this->cache->getItem('key2', ['tag2']);
-        $item->set('foobar');
-        $this->cache->saveDeferred($item);
-
-        // Both should be hit
-        $this->assertTrue($this->cache->getItem('key', ['tag'])->isHit());
-        $this->assertTrue($this->cache->getItem('key2', ['tag2'])->isHit());
-
-        // Clear tag2 and make sure we do not remove everything
-        $this->cache->clear(['tag2']);
-        $this->assertTrue($this->cache->getItem('key', ['tag'])->isHit());
-        $this->assertFalse($this->cache->getItem('key2', ['tag2'])->isHit());
-
-        // Clear everything and make sure everything is removed
-        $this->cache->clear();
-        $this->assertFalse($this->cache->getItem('key', ['tag'])->isHit());
-        $this->assertFalse($this->cache->getItem('key2', ['tag2'])->isHit());
-    }
-
-    public function testKeysWithDeferred()
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
-        }
-
-        $item = $this->cache->getItem('key', ['tag']);
-        $item->set('foobar');
-        $this->cache->saveDeferred($item);
-
-        $this->assertTrue($this->cache->getItem('key', ['tag'])->isHit());
-        $this->assertFalse($this->cache->getItem('key', ['tag2'])->isHit());
-        $this->assertFalse($this->cache->getItem('key')->isHit());
+        $item = $this->cache->getItem('key');
+        $item->setTags(['tag1']);
+        $this->cache->save($item);
 
         $this->cache->clear();
+
+        // Create a new item (no tags)
+        $item = $this->cache->getItem('key');
+        $this->cache->save($item);
+        $this->cache->clearTags(['tag1']);
+
+        $this->assertTrue($this->cache->hasItem('key'), 'Tags should be removed on clear()');
     }
 
-    /**
-     * @expectedException \Psr\Cache\InvalidArgumentException
-     * @dataProvider invalidKeys
-     */
-    public function testClearInvalidKeys($key)
+    public function testClearTag()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
@@ -246,81 +170,17 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $this->cache->clear([$key]);
-    }
+        $item = $this->cache->getItem('key');
+        $item->setTags(['tag1']);
+        $this->cache->save($item);
 
-    /**
-     * @expectedException \Psr\Cache\InvalidArgumentException
-     * @dataProvider invalidKeys
-     */
-    public function testGetItemInvalidKeys($key)
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        $this->cache->clearTags(['tag1']);
 
-            return;
-        }
+        // Create a new item (no tags)
+        $item = $this->cache->getItem('key');
+        $this->cache->save($item);
+        $this->cache->clearTags(['tag1']);
 
-        $this->cache->getItem('key', [$key]);
-    }
-
-    /**
-     * @expectedException \Psr\Cache\InvalidArgumentException
-     * @dataProvider invalidKeys
-     */
-    public function testGetItemsInvalidKeys($key)
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
-        }
-
-        $this->cache->getItems(['key'], [$key]);
-    }
-
-    /**
-     * @expectedException \Psr\Cache\InvalidArgumentException
-     * @dataProvider invalidKeys
-     */
-    public function testHasItemInvalidKeys($key)
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
-        }
-
-        $this->cache->hasItem($key);
-    }
-
-    /**
-     * @expectedException \Psr\Cache\InvalidArgumentException
-     * @dataProvider invalidKeys
-     */
-    public function testDeleteItemInvalidKeys($key)
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
-        }
-
-        $this->cache->deleteItem('key', [$key]);
-    }
-
-    /**
-     * @expectedException \Psr\Cache\InvalidArgumentException
-     * @dataProvider invalidKeys
-     */
-    public function testDeleteItemsInvalidKeys($key)
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
-        }
-
-        $this->cache->deleteItems(['key'], [$key]);
+        $this->assertTrue($this->cache->hasItem('key'), 'Item key list should be removed when clearing the tags');
     }
 }
