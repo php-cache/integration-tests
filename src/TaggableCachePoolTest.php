@@ -62,7 +62,7 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache->clearTags(['tag1']);
 
         // The item should be removed
-        $this->assertFalse($this->cache->hasItem('key'));
+        $this->assertFalse($this->cache->hasItem('key'), 'Tags does not seams to be saved');
     }
 
     public function testMultipleTags()
@@ -124,7 +124,7 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $item = $this->cache->getItem('key');
+        $item = $this->cache->getItem('key')->set('value');
         $item->setTags(['tag1']);
 
         // Save the item and then delete it
@@ -132,7 +132,7 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache->deleteItem('key');
 
         // Create a new item (no tags)
-        $item = $this->cache->getItem('key');
+        $item = $this->cache->getItem('key')->set('value');
         $this->cache->save($item);
 
         // Clear the tag
@@ -148,14 +148,14 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $item = $this->cache->getItem('key');
+        $item = $this->cache->getItem('key')->set('value');
         $item->setTags(['tag1']);
         $this->cache->save($item);
 
         $this->cache->clear();
 
         // Create a new item (no tags)
-        $item = $this->cache->getItem('key');
+        $item = $this->cache->getItem('key')->set('value');
         $this->cache->save($item);
         $this->cache->clearTags(['tag1']);
 
@@ -170,14 +170,14 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $item = $this->cache->getItem('key');
+        $item = $this->cache->getItem('key')->set('value');
         $item->setTags(['tag1']);
         $this->cache->save($item);
 
         $this->cache->clearTags(['tag1']);
 
         // Create a new item (no tags)
-        $item = $this->cache->getItem('key');
+        $item = $this->cache->getItem('key')->set('value');
         $this->cache->save($item);
         $this->cache->clearTags(['tag1']);
 
