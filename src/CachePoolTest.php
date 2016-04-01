@@ -447,15 +447,21 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $item = $this->cache->getItem('key');
-        $item->set('4711');
-        $this->cache->saveDeferred($item);
-
-        $this->cache = null;
+        $this->prepareDeferredSaveWithoutCommit();
         gc_collect_cycles();
 
         $cache = $this->createCachePool();
         $this->assertTrue($cache->getItem('key')->isHit(), 'A deferred item should automatically be committed on CachePool::__destruct().');
+    }
+
+    private function prepareDeferredSaveWithoutCommit()
+    {
+        $cache       = $this->cache;
+        $this->cache = null;
+
+        $item = $cache->getItem('key');
+        $item->set('4711');
+        $cache->saveDeferred($item);
     }
 
     public function testCommit()
