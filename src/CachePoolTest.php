@@ -13,6 +13,7 @@ namespace Cache\IntegrationTests;
 
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Bridge\PhpUnit\ClockMock;
 
 abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 {
@@ -41,6 +42,17 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         if ($this->cache !== null) {
             $this->cache->clear();
         }
+    }
+
+    public static function setUpBeforeClass()
+    {
+        ClockMock::register(__CLASS__);
+        ClockMock::withClockMock(true);
+    }
+
+    public static function tearDownAfterClass()
+    {
+        ClockMock::withClockMock(false);
     }
 
     /**
@@ -554,6 +566,36 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
         $item = $this->cache->getItem('key');
         $this->assertTrue($item->isHit());
+    }
+
+    /**
+     * {@link https://groups.google.com/d/msg/php-fig/3plYG3oa3qU/cim1w689EwAJ}.
+     */
+    public function testExpirationWithASecondRequest()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        // T = 0
+        $item = $this->cache->getItem('key');
+        $item->set('value');
+        $item->expiresAfter(10);
+        $this->cache->save($item);
+
+        sleep(5);
+
+        // T = 5
+        $item = $this->cache->getItem('key');
+        $item->set('foobar');
+        $this->cache->save($item);
+
+        sleep(12);
+
+        $item = $this->cache->getItem('key');
+        $this->assertTrue($item->isHit(), 'The item should be saved forever after second save.');
     }
 
     public function testKeyLength()
