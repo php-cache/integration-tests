@@ -343,6 +343,8 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
         $item = $this->cache->getItem('key');
         $item->set('value');
+        $item->expiresAt(\DateTime::createFromFormat('U', time() + 10));
+        $this->cache->save($item);
         $item->expiresAt(\DateTime::createFromFormat('U', time() - 1));
         $this->cache->save($item);
         $item = $this->cache->getItem('key');
@@ -695,7 +697,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item = $this->cache->getItem('key');
         $this->assertTrue(null === $item->get(), 'Wrong data type. If we store null we must get an null back.');
         $this->assertTrue(is_null($item->get()), 'Wrong data type. If we store null we must get an null back.');
-        $this->assertTrue($item->isHit(), 'Null is a perfectly fine cache value. isHit() should return true when null are stored. ');
+        $this->assertTrue($item->isHit(), 'isHit() should return true when null are stored. ');
     }
 
     public function testDataTypeFloat()
@@ -714,7 +716,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item = $this->cache->getItem('key');
         $this->assertTrue(is_float($item->get()), 'Wrong data type. If we store float we must get an float back.');
         $this->assertEquals($float, $item->get());
-        $this->assertTrue($item->isHit(), 'Null is a perfectly fine cache value. isHit() should return true when null are stored. ');
+        $this->assertTrue($item->isHit(), 'isHit() should return true when float are stored. ');
     }
 
     public function testDataTypeBoolean()
@@ -732,7 +734,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item = $this->cache->getItem('key');
         $this->assertTrue(is_bool($item->get()), 'Wrong data type. If we store boolean we must get an boolean back.');
         $this->assertTrue($item->get());
-        $this->assertTrue($item->isHit(), 'Null is a perfectly fine cache value. isHit() should return true when null are stored. ');
+        $this->assertTrue($item->isHit(), 'isHit() should return true when true are stored. ');
     }
 
     public function testDataTypeArray()
@@ -751,7 +753,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item = $this->cache->getItem('key');
         $this->assertTrue(is_array($item->get()), 'Wrong data type. If we store array we must get an array back.');
         $this->assertEquals($array, $item->get());
-        $this->assertTrue($item->isHit(), 'Null is a perfectly fine cache value. isHit() should return true when null are stored. ');
+        $this->assertTrue($item->isHit(), 'isHit() should return true when array are stored. ');
     }
 
     public function testDataTypeObject()
@@ -769,9 +771,9 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache->save($item);
 
         $item = $this->cache->getItem('key');
-        $this->assertTrue(is_object($item->get()), 'Wrong data type. If we store array we must get an array back.');
+        $this->assertTrue(is_object($item->get()), 'Wrong data type. If we store object we must get an object back.');
         $this->assertEquals($object, $item->get());
-        $this->assertTrue($item->isHit(), 'Null is a perfectly fine cache value. isHit() should return true when null are stored. ');
+        $this->assertTrue($item->isHit(), 'isHit() should return true when object are stored. ');
     }
 
     public function testIsHit()
