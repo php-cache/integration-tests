@@ -26,6 +26,9 @@ before_install:
   - echo "Disable xdebug" && phpenv config-rm xdebug.ini
   - travis_retry composer self-update
 
+install:
+  - composer update
+
 script:
   - phpunit --testsuite $SUITE
 
