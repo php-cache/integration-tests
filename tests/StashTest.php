@@ -23,7 +23,7 @@ class StashTest extends BaseTest
     private function getClient()
     {
         if ($this->client === null) {
-            $this->client = new \Stash\Driver\Redis(['servers' => [['server'=>'127.0.0.1', 'port'=>'6379']]]);
+            $this->client = new \Stash\Driver\Redis(['servers' => [['server' => '127.0.0.1', 'port' => '6379']]]);
         }
 
         return $this->client;
