@@ -12,11 +12,16 @@
   bootstrap="vendor/autoload.php"
   >
   <testsuites>
-    <testsuite name="PHP Cache Test Suite">
-      <directory>./vendor/cache/cache/tests/</directory>
+    <testsuite name="PHPCache">
+      <directory>./vendor/cache/cache/src/Adapter/Redis/tests/</directory>
     </testsuite>
-    <testsuite name="Symfony Cache Test Suite">
-      <directory>./vendor/symfony/cache/tests/</directory>
+
+    <testsuite name="Symfony">
+      <file>./vendor/symfony/cache/Tests/Adapter/RedisAdapterTest.php</file>
+    </testsuite>
+
+    <testsuite name="Stash">
+      <file>./tests/StashTest.php</file>
     </testsuite>
   </testsuites>
 

@@ -1,0 +1,31 @@
+language: php
+sudo: false
+
+php:
+  - 7.0
+
+env:
+  - SUITE=PHPCache
+  - SUITE=Symfony
+  - SUITE=Stash
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - env: SUITE=Stash
+
+
+services:
+  - redis
+
+cache:
+  directories:
+    - "$HOME/.composer/cache"
+
+before_install:
+  - echo "Disable xdebug" && phpenv config-rm xdebug.ini
+  - travis_retry composer self-update
+
+script:
+  - phpunit --testsuite $SUITE
+
