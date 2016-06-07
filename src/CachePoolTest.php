@@ -35,6 +35,10 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->cache = $this->createCachePool();
+
+        ClockMock::register(__CLASS__);
+        ClockMock::register(get_class($this->cache));
+        ClockMock::withClockMock(true);
     }
 
     protected function tearDown()
@@ -42,16 +46,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         if ($this->cache !== null) {
             $this->cache->clear();
         }
-    }
 
-    public static function setUpBeforeClass()
-    {
-        ClockMock::register(__CLASS__);
-        ClockMock::withClockMock(true);
-    }
-
-    public static function tearDownAfterClass()
-    {
         ClockMock::withClockMock(false);
     }
 
