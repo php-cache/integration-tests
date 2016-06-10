@@ -23,6 +23,11 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
     protected $skippedTests = [];
 
     /**
+     * @type bool
+     */
+    protected $skipClockMock = false;
+
+    /**
      * @type CacheItemPoolInterface
      */
     private $cache;
@@ -36,9 +41,11 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
     {
         $this->cache = $this->createCachePool();
 
-        ClockMock::register(__CLASS__);
-        ClockMock::register(get_class($this->cache));
-        ClockMock::withClockMock(true);
+        if (!$this->skipClockMock) {
+            ClockMock::register(__CLASS__);
+            ClockMock::register(get_class($this->cache));
+            ClockMock::withClockMock(true);
+        }
     }
 
     protected function tearDown()
@@ -47,7 +54,9 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
             $this->cache->clear();
         }
 
-        ClockMock::withClockMock(false);
+        if (!$this->skipClockMock) {
+            ClockMock::withClockMock(false);
+        }
     }
 
     /**
