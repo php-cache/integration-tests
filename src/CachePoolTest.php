@@ -363,7 +363,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item->set('data');
         $this->cache->save($item);
 
-        // Use a new pool instance to ensure that we don't it any caches
+        // Use a new pool instance to ensure that we don't hit any caches
         $pool = $this->createCachePool();
         $item = $pool->getItem('test_ttl_null');
 
