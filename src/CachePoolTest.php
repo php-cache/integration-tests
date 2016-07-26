@@ -29,7 +29,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
     /**
      * @return CacheItemPoolInterface that is used in the tests
      */
-    abstract public function createCachePool();
+    abstract public function createCachePool($defaultLifeTime=0);
 
     protected function setUp()
     {
@@ -876,4 +876,28 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $value = $item->get();
         $this->assertInstanceOf('DateTime', $value, 'You must be able to store objects in cache.');
     }
+
+    public function testDefaultLifetime()
+    {
+
+	$this->tearDown();
+        $pool1 = $this->createCachePool(10);
+
+        $item = $pool1->getItem('foo');
+        $this->assertFalse($item->isHit());
+        $this->assertTrue($pool1->save($item->set('bar')));
+
+	sleep(2);
+	
+        $item = $pool1->getItem('foo');
+        $this->assertTrue($item->isHit());
+        $this->assertSame('bar', $item->get());
+
+	sleep(15);
+	
+        $item = $pool1->getItem('foo');
+        $this->assertFalse($item->isHit());
+	
+    }
+
 }
