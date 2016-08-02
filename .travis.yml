@@ -8,6 +8,7 @@ env:
   - SUITE=PHPCache
   - SUITE=Symfony
   - SUITE=Stash
+  - SUITE=MadeWithLove
 
 matrix:
   fast_finish: true
@@ -17,6 +18,7 @@ matrix:
 
 services:
   - redis
+  - memcached
 
 cache:
   directories:
@@ -27,8 +29,9 @@ before_install:
   - travis_retry composer self-update
 
 install:
+  - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
-  - composer update
+  - composer update --prefer-source
 
 script:
   - phpunit --testsuite $SUITE
