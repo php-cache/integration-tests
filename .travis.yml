@@ -25,7 +25,6 @@ cache:
     - "$HOME/.composer/cache"
 
 before_install:
-  - yes '' | pecl install memcached
   - echo "Disable xdebug" && phpenv config-rm xdebug.ini
   - travis_retry composer self-update
 
