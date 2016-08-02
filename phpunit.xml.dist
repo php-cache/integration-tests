@@ -23,6 +23,10 @@
     <testsuite name="Stash">
       <file>./tests/StashTest.php</file>
     </testsuite>
+
+    <testsuite name="MadeWithLove">
+      <file>./vendor/madewithlove/illuminate-psr-cache-bridge/tests/integration/IntegrationTest.php</file>
+    </testsuite>
   </testsuites>
 
   <logging>

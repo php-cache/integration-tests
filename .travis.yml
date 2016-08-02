@@ -8,6 +8,7 @@ env:
   - SUITE=PHPCache
   - SUITE=Symfony
   - SUITE=Stash
+  - SUITE=MadeWithLove
 
 matrix:
   fast_finish: true
@@ -28,7 +29,7 @@ before_install:
 
 install:
   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
-  - composer update
+  - composer update --prefer-source
 
 script:
   - phpunit --testsuite $SUITE
