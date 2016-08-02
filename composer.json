@@ -30,6 +30,7 @@
         "cache/cache": "dev-master",
         "symfony/cache": "^3.1",
         "madewithlove/illuminate-psr-cache-bridge": "^1.0",
+        "illuminate/cache": "^5.0",
         "tedivm/stash": "dev-master"
     },
     "autoload":    {
