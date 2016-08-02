@@ -375,7 +375,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item->set('data');
         $this->cache->save($item);
 
-        // Use a new pool instance to ensure that we don't it any caches
+        // Use a new pool instance to ensure that we don't hit any caches
         $pool = $this->createCachePool();
         $item = $pool->getItem('test_ttl_null');
 
@@ -561,7 +561,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
         $item = $this->cache->getItem('key');
         $item->set('value');
-        $item->expiresAt(null);
+        $item->expiresAfter(null);
         $this->cache->save($item);
 
         $item = $this->cache->getItem('key');
@@ -917,5 +917,22 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item  = $this->cache->getItem('key');
         $value = $item->get();
         $this->assertInstanceOf('DateTime', $value, 'You must be able to store objects in cache.');
+    }
+
+    public function testHasItemReturnsFalseWhenDeferredItemIsExpired()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        $item = $this->cache->getItem('key');
+        $item->set('value');
+        $item->expiresAfter(2);
+        $this->cache->saveDeferred($item);
+
+        sleep(3);
+        $this->assertFalse($this->cache->hasItem('key'));
     }
 }
