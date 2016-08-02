@@ -549,7 +549,7 @@ abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
 
         $item = $this->cache->getItem('key');
         $item->set('value');
-        $item->expiresAt(null);
+        $item->expiresAfter(null);
         $this->cache->save($item);
 
         $item = $this->cache->getItem('key');
