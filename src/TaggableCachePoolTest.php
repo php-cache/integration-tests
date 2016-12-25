@@ -12,17 +12,19 @@
 namespace Cache\IntegrationTests;
 
 use Cache\Adapter\Common\TaggableCacheItemPoolInterface;
-use Psr\Cache\InvalidArgumentException;
 
+/**
+ * @author Tobias Nyholm <tobias.nyholm@gmail.com>
+ */
 abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @type array with functionName => reason.
+     * @var array with functionName => reason.
      */
     protected $skippedTests = [];
 
     /**
-     * @type TaggableCacheItemPoolInterface
+     * @var TaggableCacheItemPoolInterface
      */
     private $cache;
 
