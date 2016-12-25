@@ -261,8 +261,10 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         // Create a new item (no tags)
         $item = $this->cache->getItem('key')->set('value');
         $this->cache->save($item);
-        $this->cache->invalidateTags(['tag1']);
+        $this->cache->invalidateTags(['tag2']);
+        $this->assertTrue($this->cache->hasItem('key'), 'Item key list should be removed when clearing the tags');
 
+        $this->cache->invalidateTags(['tag1']);
         $this->assertTrue($this->cache->hasItem('key'), 'Item key list should be removed when clearing the tags');
     }
 
