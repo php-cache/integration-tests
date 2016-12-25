@@ -19,12 +19,12 @@ use Cache\Adapter\Common\TaggableCacheItemPoolInterface;
 abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var array with functionName => reason.
+     * @type array with functionName => reason.
      */
     protected $skippedTests = [];
 
     /**
-     * @var TaggableCacheItemPoolInterface
+     * @type TaggableCacheItemPoolInterface
      */
     private $cache;
 
@@ -265,6 +265,7 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->cache->hasItem('key'), 'Item key list should be removed when clearing the tags');
     }
+
     public function testInvalidateTags()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
