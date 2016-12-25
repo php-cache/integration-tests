@@ -94,10 +94,10 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
     public function testTagAccessor()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
-        $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
 
-        return;
-    }
+            return;
+        }
 
         $item = $this->cache->getItem('key')->set('value');
         $item->setTags(['tag1', 'tag2']);
