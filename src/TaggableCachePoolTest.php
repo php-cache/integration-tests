@@ -279,7 +279,7 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
     /**
      * When an item is overwritten we need to clear tags for original item.
      */
-    public function testTagsAreCleanedOnSaveSymfony()
+    public function testTagsAreCleanedOnSave()
     {
         $pool = $this->cache;
         $i    = $pool->getItem('key');
