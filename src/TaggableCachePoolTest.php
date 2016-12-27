@@ -282,11 +282,11 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
     public function testTagsAreCleanedOnSaveSymfony()
     {
         $pool = $this->cache;
-        $i = $pool->getItem('key');
+        $i    = $pool->getItem('key');
         $pool->save($i->addTag('foo'));
         $i = $pool->getItem('key');
         $pool->save($i->addTag('bar'));
-        $pool->invalidateTags(array('foo'));
+        $pool->invalidateTags(['foo']);
         $this->assertTrue($pool->getItem('key')->isHit());
     }
 }
