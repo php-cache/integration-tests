@@ -45,27 +45,9 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testBasicUsage()
+    public function invalidKeys()
     {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
-        }
-
-        $item = $this->cache->getItem('key');
-        $item->set('value');
-        $item->setTags(['tag1', 'tag2']);
-        $this->cache->save($item);
-
-        // The item should be saved
-        $this->assertTrue($this->cache->hasItem('key'));
-
-        // I want to clear all post by author
-        $this->cache->invalidateTags(['tag1']);
-
-        // The item should be removed
-        $this->assertFalse($this->cache->hasItem('key'), 'Tags does not seams to be saved');
+        return CachePoolTest::invalidKeys();
     }
 
     public function testMultipleTags()
@@ -155,8 +137,9 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \Psr\Cache\InvalidArgumentException
+     * @dataProvider invalidKeys
      */
-    public function testTagAccessorWithInvalidTag()
+    public function testTagAccessorWithInvalidTag($tag)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
@@ -165,7 +148,7 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $item = $this->cache->getItem('key')->set('value');
-        $item->addTag('@foo@');
+        $item->addTag($tag);
         $this->cache->save($item);
     }
 
@@ -290,6 +273,20 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache->save($item);
         $this->cache->invalidateTags(['tag1']);
 
-        $this->assertTrue($this->cache->hasItem('key'), 'Item key list should be removed when clearing the tags');
+        $this->assertTrue($this->cache->hasItem('key'), 'Item k list should be removed when clearing the tags');
+    }
+
+    /**
+     * When an item is overwritten we need to clear tags for original item.
+     */
+    public function testTagsAreCleanedOnSaveSymfony()
+    {
+        $pool = $this->cache;
+        $i = $pool->getItem('key');
+        $pool->save($i->addTag('foo'));
+        $i = $pool->getItem('key');
+        $pool->save($i->addTag('bar'));
+        $pool->invalidateTags(array('foo'));
+        $this->assertTrue($pool->getItem('key')->isHit());
     }
 }
