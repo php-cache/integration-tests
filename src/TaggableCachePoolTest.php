@@ -85,7 +85,9 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $item = $this->cache->getItem('key')->set('value');
-        $this->assertCount(0, $item->getTags());
+        $tags = $item->getTags();
+        $this->assertTrue(is_array($tags));
+        $this->assertCount(0, $tags);
 
         $item->addTag('tag0');
         $this->assertCount(1, $item->getTags());
