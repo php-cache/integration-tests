@@ -76,7 +76,7 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->cache->hasItem('key4'));
     }
 
-    public function testTagAccessor()
+    public function testPreviousTag()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
@@ -85,40 +85,18 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $item = $this->cache->getItem('key')->set('value');
-        $tags = $item->getTags();
+        $tags = $item->getPreviousTags();
         $this->assertTrue(is_array($tags));
         $this->assertCount(0, $tags);
 
-        $item->addTag('tag0');
-        $this->assertCount(1, $item->getTags());
+        $item->setTags(['tag0']);
+        $this->assertCount(0, $item->getPreviousTags());
 
-        $item->setTags(['tag1', 'tag2']);
-        $this->assertCount(2, $item->getTags());
-        $tags = $item->getTags();
-        $this->assertTrue(in_array('tag1', $tags));
-        $this->assertTrue(in_array('tag2', $tags));
-
-        $item->addTags(['tag3', 'tag4']);
-        $this->assertCount(4, $item->getTags());
-        $tags = $item->getTags();
-        $this->assertTrue(in_array('tag4', $tags));
-        $this->assertTrue(in_array('tag3', $tags));
-    }
-
-    /**
-     * @expectedException \Psr\Cache\InvalidArgumentException
-     */
-    public function testTagAccessorWithNoString()
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
-        }
-
-        $item = $this->cache->getItem('key')->set('value');
-        $item->addTag(new \stdClass());
         $this->cache->save($item);
+        $this->assertCount(0, $item->getPreviousTags());
+
+        $item = $this->cache->getItem('key');
+        $this->assertCount(1, $item->getPreviousTags());
     }
 
     /**
@@ -133,7 +111,7 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $item = $this->cache->getItem('key')->set('value');
-        $item->addTag('');
+        $item->setTags(['']);
         $this->cache->save($item);
     }
 
@@ -150,7 +128,7 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $item = $this->cache->getItem('key')->set('value');
-        $item->addTag($tag);
+        $item->setTags([$tag]);
         $this->cache->save($item);
     }
 
@@ -163,14 +141,11 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $item = $this->cache->getItem('key')->set('value');
-        $item->addTag('tag');
+        $item->setTags(['tag', 'tag', 'tag']);
         $this->cache->save($item);
-        $item->addTag('tag');
-        $this->cache->save($item);
-        $item->addTag('tag');
-        $this->cache->save($item);
+        $item = $this->cache->getItem('key');
 
-        $this->assertCount(1, $item->getTags());
+        $this->assertCount(1, $item->getPreviousTags());
     }
 
     /**
@@ -286,10 +261,10 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
     public function testTagsAreCleanedOnSave()
     {
         $pool = $this->cache;
-        $i    = $pool->getItem('key');
-        $pool->save($i->addTag('foo'));
+        $i    = $pool->getItem('key')->set('value');
+        $pool->save($i->setTags(['foo']));
         $i = $pool->getItem('key');
-        $pool->save($i->addTag('bar'));
+        $pool->save($i->setTags(['bar']));
         $pool->invalidateTags(['foo']);
         $this->assertTrue($pool->getItem('key')->isHit());
     }
