@@ -45,27 +45,9 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testBasicUsage()
+    public function invalidKeys()
     {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
-        }
-
-        $item = $this->cache->getItem('key');
-        $item->set('value');
-        $item->setTags(['tag1', 'tag2']);
-        $this->cache->save($item);
-
-        // The item should be saved
-        $this->assertTrue($this->cache->hasItem('key'));
-
-        // I want to clear all post by author
-        $this->cache->invalidateTags(['tag1']);
-
-        // The item should be removed
-        $this->assertFalse($this->cache->hasItem('key'), 'Tags does not seams to be saved');
+        return CachePoolTest::invalidKeys();
     }
 
     public function testMultipleTags()
@@ -94,7 +76,7 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->cache->hasItem('key4'));
     }
 
-    public function testTagAccessor()
+    public function testPreviousTag()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
@@ -103,38 +85,18 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $item = $this->cache->getItem('key')->set('value');
-        $this->assertCount(0, $item->getTags());
+        $tags = $item->getPreviousTags();
+        $this->assertTrue(is_array($tags));
+        $this->assertCount(0, $tags);
 
-        $item->addTag('tag0');
-        $this->assertCount(1, $item->getTags());
+        $item->setTags(['tag0']);
+        $this->assertCount(0, $item->getPreviousTags());
 
-        $item->setTags(['tag1', 'tag2']);
-        $this->assertCount(2, $item->getTags());
-        $tags = $item->getTags();
-        $this->assertTrue(in_array('tag1', $tags));
-        $this->assertTrue(in_array('tag2', $tags));
-
-        $item->addTags(['tag3', 'tag4']);
-        $this->assertCount(4, $item->getTags());
-        $tags = $item->getTags();
-        $this->assertTrue(in_array('tag4', $tags));
-        $this->assertTrue(in_array('tag3', $tags));
-    }
-
-    /**
-     * @expectedException \Psr\Cache\InvalidArgumentException
-     */
-    public function testTagAccessorWithNoString()
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
-        }
-
-        $item = $this->cache->getItem('key')->set('value');
-        $item->addTag(new \stdClass());
         $this->cache->save($item);
+        $this->assertCount(0, $item->getPreviousTags());
+
+        $item = $this->cache->getItem('key');
+        $this->assertCount(1, $item->getPreviousTags());
     }
 
     /**
@@ -149,14 +111,15 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $item = $this->cache->getItem('key')->set('value');
-        $item->addTag('');
+        $item->setTags(['']);
         $this->cache->save($item);
     }
 
     /**
      * @expectedException \Psr\Cache\InvalidArgumentException
+     * @dataProvider invalidKeys
      */
-    public function testTagAccessorWithInvalidTag()
+    public function testTagAccessorWithInvalidTag($tag)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
@@ -165,7 +128,7 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $item = $this->cache->getItem('key')->set('value');
-        $item->addTag('@foo@');
+        $item->setTags([$tag]);
         $this->cache->save($item);
     }
 
@@ -178,14 +141,11 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         }
 
         $item = $this->cache->getItem('key')->set('value');
-        $item->addTag('tag');
+        $item->setTags(['tag', 'tag', 'tag']);
         $this->cache->save($item);
-        $item->addTag('tag');
-        $this->cache->save($item);
-        $item->addTag('tag');
-        $this->cache->save($item);
+        $item = $this->cache->getItem('key');
 
-        $this->assertCount(1, $item->getTags());
+        $this->assertCount(1, $item->getPreviousTags());
     }
 
     /**
@@ -292,6 +252,20 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         $this->cache->save($item);
         $this->cache->invalidateTags(['tag1']);
 
-        $this->assertTrue($this->cache->hasItem('key'), 'Item key list should be removed when clearing the tags');
+        $this->assertTrue($this->cache->hasItem('key'), 'Item k list should be removed when clearing the tags');
+    }
+
+    /**
+     * When an item is overwritten we need to clear tags for original item.
+     */
+    public function testTagsAreCleanedOnSave()
+    {
+        $pool = $this->cache;
+        $i    = $pool->getItem('key')->set('value');
+        $pool->save($i->setTags(['foo']));
+        $i = $pool->getItem('key');
+        $pool->save($i->setTags(['bar']));
+        $pool->invalidateTags(['foo']);
+        $this->assertTrue($pool->getItem('key')->isHit());
     }
 }
