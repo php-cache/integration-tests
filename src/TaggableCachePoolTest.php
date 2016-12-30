@@ -11,7 +11,7 @@
 
 namespace Cache\IntegrationTests;
 
-use Cache\Adapter\Common\TaggableCacheItemPoolInterface;
+use Cache\TagInterop\TaggableCacheItemPoolInterface;
 
 /**
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
@@ -93,6 +93,25 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(0, $item->getPreviousTags());
 
         $this->cache->save($item);
+        $this->assertCount(0, $item->getPreviousTags());
+
+        $item = $this->cache->getItem('key');
+        $this->assertCount(1, $item->getPreviousTags());
+    }
+
+    public function testPreviousTagDeferred()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        $item = $this->cache->getItem('key')->set('value');
+        $item->setTags(['tag0']);
+        $this->assertCount(0, $item->getPreviousTags());
+
+        $this->cache->saveDeferred($item);
         $this->assertCount(0, $item->getPreviousTags());
 
         $item = $this->cache->getItem('key');
