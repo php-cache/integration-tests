@@ -279,6 +279,12 @@ abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
      */
     public function testTagsAreCleanedOnSave()
     {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
         $pool = $this->cache;
         $i    = $pool->getItem('key')->set('value');
         $pool->save($i->setTags(['foo']));
