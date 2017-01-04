@@ -16,12 +16,12 @@ use Psr\SimpleCache\CacheInterface;
 abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var array with functionName => reason.
+     * @type array with functionName => reason.
      */
     protected $skippedTests = [];
 
     /**
-     * @var CacheInterface
+     * @type CacheInterface
      */
     private $cache;
 
@@ -301,6 +301,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->cache->get('key0'), 'Values must be deleted on deleteMultiple()');
         $this->assertNull($this->cache->get('key1'), 'Values must be deleted on deleteMultiple()');
     }
+
     public function testHas()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -524,7 +525,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $object = new \stdClass();
+        $object    = new \stdClass();
         $object->a = 'foo';
         $this->cache->set('key', $object);
         $result = $this->cache->get('key');
