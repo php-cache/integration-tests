@@ -231,9 +231,9 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         foreach ($result as $key => $r) {
             if ($key === 'key3') {
                 $this->assertEquals('value', $r);
+            } else {
+                $this->assertEquals('foo', $r);
             }
-
-            $this->assertEquals('foo', $r);
         }
     }
 
@@ -251,7 +251,16 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         };
 
         $this->cache->set('key0', 'value0');
-        $this->cache->getMultiple($gen);
+        $result = $this->cache->getMultiple($gen);
+        foreach ($result as $key => $r) {
+            if ($key === 'key0') {
+                $this->assertEquals('value0', $r);
+            } elseif ($key === 'key1') {
+                $this->assertNull($r);
+            } else {
+                $this->assertFalse(true, 'This should not happend');
+            }
+        }
         $this->assertEquals('value0', $this->cache->get('key0'));
         $this->assertNull($this->cache->get('key1'));
     }
@@ -369,7 +378,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         }
 
         if (is_array($key) || is_object($key)) {
-            return;
+            $this->markTestSkipped('We cannot use objects or arrays as keys. Skipping test.');
         }
 
         $this->cache->setMultiple(['key1' => 'foo', $key => 'bar', 'key2' => 'baz']);
