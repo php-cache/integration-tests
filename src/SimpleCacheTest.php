@@ -11,18 +11,17 @@
 
 namespace Cache\IntegrationTests;
 
-
 use Psr\SimpleCache\CacheInterface;
 
 abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @type array with functionName => reason.
+     * @var array with functionName => reason.
      */
     protected $skippedTests = [];
 
     /**
-     * @type CacheInterface
+     * @var CacheInterface
      */
     private $cache;
 
@@ -98,7 +97,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
             [47.11],
             [true],
             [null],
-            [['key'=>'value']],
+            [['key' => 'value']],
             [new \stdClass()],
         ];
     }
@@ -121,7 +120,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         sleep(2);
         $this->assertNull($this->cache->get('key1'), 'Value must expire after ttl.');
 
-        $this->cache->set('key2', 'value', new \DateInterval('1S'));
+        $this->cache->set('key2', 'value', new \DateInterval('PT1S'));
         $this->assertEquals('value', $this->cache->get('key2'));
         sleep(2);
         $this->assertNull($this->cache->get('key2'), 'Value must expire after ttl.');
@@ -170,7 +169,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->cache->get('key'), 'Values must be deleted on clear()');
     }
 
-
     public function testSetMultiple()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -179,19 +177,19 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $result = $this->cache->setMultiple(['key0'=>'value0', 'key1'=>'value1']);
+        $result = $this->cache->setMultiple(['key0' => 'value0', 'key1' => 'value1']);
         $this->assertTrue($result, 'setMultiple() must return true if success');
         $this->assertEquals('value0', $this->cache->get('key0'));
         $this->assertEquals('value1', $this->cache->get('key1'));
 
-        $this->cache->setMultiple(['key2'=>'value2', 'key3'=>'value3'], 1);
+        $this->cache->setMultiple(['key2' => 'value2', 'key3' => 'value3'], 1);
         $this->assertEquals('value2', $this->cache->get('key2'));
         $this->assertEquals('value3', $this->cache->get('key3'));
         sleep(2);
         $this->assertNull($this->cache->get('key2'), 'Value must expire after ttl.');
         $this->assertNull($this->cache->get('key3'), 'Value must expire after ttl.');
 
-        $this->cache->setMultiple(['key4'=>'value4'], new \DateInterval('1S'));
+        $this->cache->setMultiple(['key4' => 'value4'], new \DateInterval('PT1S'));
         $this->assertEquals('value4', $this->cache->get('key4'));
         sleep(2);
         $this->assertNull($this->cache->get('key4'), 'Value must expire after ttl.');
@@ -205,7 +203,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $gen = function() {
+        $gen = function () {
             yield 'key0' => 'value0';
             yield 'key1' => 'value1';
         };
@@ -224,16 +222,20 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         }
 
         $result = $this->cache->getMultiple(['key0', 'key1']);
-        $this->assertNull($result['key0']);
-        $this->assertNull($result['key1']);
+        foreach ($result as $r) {
+            $this->assertNull($r);
+        }
 
         $this->cache->set('key3', 'value');
         $result = $this->cache->getMultiple(['key2', 'key3', 'key4'], 'foo');
-        $this->assertEquals('foo', $result['key2']);
-        $this->assertEquals('value', $result['key3']);
-        $this->assertEquals('foo', $result['key2']);
-    }
+        foreach ($result as $key => $r) {
+            if ($key === 'key3') {
+                $this->assertEquals('value', $r);
+            }
 
+            $this->assertEquals('foo', $r);
+        }
+    }
 
     public function testGetMultipleWithGenerator()
     {
@@ -243,7 +245,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $gen = function() {
+        $gen = function () {
             yield 'key0';
             yield 'key1';
         };
@@ -280,7 +282,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $gen = function() {
+        $gen = function () {
             yield 'key0';
             yield 'key1';
         };
@@ -303,7 +305,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->cache->has('key0'));
 
         $this->cache->set('key1', null);
-        $this->assertFalse($this->cache->has('key1'));
+        $this->assertFalse($this->cache->has('key1'), 'A value of null is considered as has=false');
     }
 
     /**
@@ -363,7 +365,11 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $this->cache->setMultiple(['key1'=>'foo', $key=>'bar', 'key2'=>'baz']);
+        if (is_array($key) || is_object($key)) {
+            return;
+        }
+
+        $this->cache->setMultiple(['key1' => 'foo', $key => 'bar', 'key2' => 'baz']);
     }
 
     /**
@@ -411,7 +417,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         $this->cache->deleteMultiple(['key1', $key, 'key2']);
     }
 
-
     public function testNullOverwrite()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -453,7 +458,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(5 === $result, 'Wrong data type. If we store an int we must get an int back.');
         $this->assertTrue(is_int($result), 'Wrong data type. If we store an int we must get an int back.');
     }
-
 
     public function testDataTypeFloat()
     {
@@ -508,7 +512,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $object    = new \stdClass();
+        $object = new \stdClass();
         $object->a = 'foo';
         $this->cache->set('key', $object);
         $result = $this->cache->get('key');
@@ -544,7 +548,10 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
 
         $this->cache->setMultiple([$key => 'foobar']);
         $result = $this->cache->getMultiple([$key]);
-        $this->assertEquals('foobar', $result[$key]);
+        foreach ($result as $i => $r) {
+            $this->assertEquals($key, $i);
+            $this->assertEquals('foobar', $r);
+        }
     }
 
     /**
@@ -575,6 +582,8 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
 
         $this->cache->setMultiple(['key' => $data]);
         $result = $this->cache->getMultiple(['key']);
-        $this->assertEquals($data, $result['key']);
+        foreach ($result as $r) {
+            $this->assertEquals($data, $r);
+        }
     }
 }
