@@ -335,7 +335,10 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $this->cache->getMultiple(['key1', $key, 'key2']);
+        $result = $this->cache->getMultiple(['key1', $key, 'key2']);
+        foreach ($result as $r) {
+            // We want to make sure we iterate over the results
+        }
     }
 
     /**
