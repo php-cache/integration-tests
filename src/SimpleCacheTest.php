@@ -208,7 +208,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
             yield 'key1' => 'value1';
         };
 
-        $this->cache->setMultiple($gen);
+        $this->cache->setMultiple($gen());
         $this->assertEquals('value0', $this->cache->get('key0'));
         $this->assertEquals('value1', $this->cache->get('key1'));
     }
@@ -251,7 +251,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         };
 
         $this->cache->set('key0', 'value0');
-        $result = $this->cache->getMultiple($gen);
+        $result = $this->cache->getMultiple($gen());
         foreach ($result as $key => $r) {
             if ($key === 'key0') {
                 $this->assertEquals('value0', $r);
@@ -296,7 +296,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
             yield 'key1';
         };
         $this->cache->set('key0', 'value0');
-        $this->assertTrue($this->cache->deleteMultiple($gen), 'Deleting a generator should return true');
+        $this->assertTrue($this->cache->deleteMultiple($gen()), 'Deleting a generator should return true');
 
         $this->assertNull($this->cache->get('key0'), 'Values must be deleted on deleteMultiple()');
         $this->assertNull($this->cache->get('key1'), 'Values must be deleted on deleteMultiple()');
