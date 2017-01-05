@@ -106,8 +106,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $result = $this->cache->set('key', 'value');
@@ -130,8 +128,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->assertNull($this->cache->get('key'));
@@ -145,8 +141,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->assertTrue($this->cache->delete('key'), 'Deleting a value that does not exist should return true');
@@ -159,8 +153,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->assertTrue($this->cache->clear(), 'Clearing an empty cache should return true');
@@ -173,8 +165,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $result = $this->cache->setMultiple(['key0' => 'value0', 'key1' => 'value1']);
@@ -199,8 +189,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $gen = function () {
@@ -217,8 +205,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $result = $this->cache->getMultiple(['key0', 'key1']);
@@ -241,8 +227,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $gen = function () {
@@ -269,8 +253,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->assertTrue($this->cache->deleteMultiple([]), 'Deleting a empty array should return true');
@@ -287,8 +269,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $gen = function () {
@@ -306,16 +286,11 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->assertFalse($this->cache->has('key0'));
         $this->cache->set('key0', 'value0');
         $this->assertTrue($this->cache->has('key0'));
-
-        $this->cache->set('key1', null);
-        $this->assertFalse($this->cache->has('key1'), 'A value of null is considered as has=false');
     }
 
     /**
@@ -326,8 +301,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->cache->get($key);
@@ -341,8 +314,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $result = $this->cache->getMultiple(['key1', $key, 'key2']);
@@ -359,8 +330,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->cache->set($key, 'foobar');
@@ -374,8 +343,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         if (is_array($key) || is_object($key)) {
@@ -393,8 +360,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->cache->has($key);
@@ -408,8 +373,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->cache->delete($key);
@@ -423,8 +386,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->cache->deleteMultiple(['key1', $key, 'key2']);
@@ -434,8 +395,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->cache->set('key', 5);
@@ -448,8 +407,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->cache->set('key', '5');
@@ -462,8 +419,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->cache->set('key', 5);
@@ -476,8 +431,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $float = 1.23456789;
@@ -491,8 +444,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->cache->set('key', false);
@@ -506,8 +457,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $array = ['a' => 'foo', 2 => 'bar'];
@@ -521,8 +470,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $object    = new \stdClass();
@@ -540,8 +487,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->cache->set($key, 'foobar');
@@ -555,8 +500,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->cache->setMultiple([$key => 'foobar']);
@@ -574,8 +517,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->cache->set('key', $data);
@@ -589,8 +530,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $this->cache->setMultiple(['key' => $data]);
