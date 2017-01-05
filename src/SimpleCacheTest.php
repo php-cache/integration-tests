@@ -362,10 +362,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
-        $result = $this->cache->getMultiple(['key1', $key, 'key2']);
-        foreach ($result as $r) {
-            // We want to make sure we iterate over the results
-        }
+        $this->cache->getMultiple(['key1', $key, 'key2']);
     }
 
     /**
@@ -377,10 +374,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
-        $result = $this->cache->getMultiple('key');
-        foreach ($result as $r) {
-            // We want to make sure we iterate over the results
-        }
+        $this->cache->getMultiple('key');
     }
 
     /**
