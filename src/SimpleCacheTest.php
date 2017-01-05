@@ -437,7 +437,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         $this->cache->deleteMultiple(['key1', $key, 'key2']);
     }
 
-
     /**
      * @expectedException \Psr\SimpleCache\InvalidArgumentException
      * @dataProvider invalidTtl
@@ -450,7 +449,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
 
         $this->cache->set('key', 'value', $ttl);
     }
-
 
     /**
      * @expectedException \Psr\SimpleCache\InvalidArgumentException
@@ -619,7 +617,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
-        $obj = new \stdClass();
+        $obj      = new \stdClass();
         $obj->foo = 'value';
         $this->assertEquals($obj, $this->cache->get('key', $obj));
     }
@@ -630,7 +628,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
-        $obj = new \stdClass();
+        $obj      = new \stdClass();
         $obj->foo = 'value';
         $this->cache->set('key', $obj);
         $obj->foo = 'changed';
