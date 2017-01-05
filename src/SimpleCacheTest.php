@@ -370,6 +370,21 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function testGetMultipleNoIterable()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $result = $this->cache->getMultiple('key');
+        foreach ($result as $r) {
+            // We want to make sure we iterate over the results
+        }
+    }
+
+    /**
+     * @expectedException \Psr\SimpleCache\InvalidArgumentException
      * @dataProvider invalidKeys
      */
     public function testSetInvalidKeys($key)
@@ -396,6 +411,18 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->cache->setMultiple(['key1' => 'foo', $key => 'bar', 'key2' => 'baz']);
+    }
+
+    /**
+     * @expectedException \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function testSetMultipleNoIterable()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->cache->setMultiple('key');
     }
 
     /**
@@ -435,6 +462,18 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->cache->deleteMultiple(['key1', $key, 'key2']);
+    }
+
+    /**
+     * @expectedException \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function testDeleteMultipleNoIterable()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->cache->deleteMultiple('key');
     }
 
     /**
