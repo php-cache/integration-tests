@@ -182,7 +182,7 @@ abstract class CachePoolTest extends TestCase
 
         /** @type CacheItemInterface $item */
         foreach ($items as $i => $item) {
-            $item->set($i);
+            $item->set($i.'_value');
             $this->cache->save($item);
 
             $count++;
@@ -193,12 +193,24 @@ abstract class CachePoolTest extends TestCase
         $keys[] = 'biz';
         /** @type CacheItemInterface[] $items */
         $items = $this->cache->getItems($keys);
+
+        // Overwrite an item after fetching to ensure that the actual backend fetch happened when asking for it rather than during iteration
+        $barItem = $this->cache->getItem('bar');
+        $barItem->set('overriden after fetching');
+        $this->cache->save($barItem);
+
         $count = 0;
         foreach ($items as $key => $item) {
             $itemKey = $item->getKey();
             $this->assertEquals($itemKey, $key, 'Keys must be preserved when fetching multiple items');
             $this->assertEquals($key !== 'biz', $item->isHit());
             $this->assertTrue(in_array($key, $keys), 'Cache key can not change.');
+
+            if ($key !== 'biz') {
+                $this->assertEquals($key.'_value', $item->get());
+            } else {
+                $this->assertNull($item->get());
+            }
 
             // Remove $key for $keys
             foreach ($keys as $k => $v) {
