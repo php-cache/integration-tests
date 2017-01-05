@@ -14,7 +14,7 @@ matrix:
   fast_finish: true
   allow_failures:
     - env: SUITE=Stash
-
+    - env: SUITE=MadeWithLove
 
 services:
   - redis
