@@ -9,6 +9,7 @@
     ],
     "homepage":    "https://github.com/php-cache/integration-tests",
     "license":     "MIT",
+    "minimum-stability": "dev",
     "authors":     [
         {
             "name":     "Aaron Scherer",
