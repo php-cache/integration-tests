@@ -72,6 +72,25 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @return array
+     */
+    public static function invalidTtl()
+    {
+        return [
+            [''],
+            [true],
+            [false],
+            ['abc'],
+            [2.5],
+            [' 1'], // can be casted to a int
+            ['12foo'], // can be casted to a int
+            ['025'], // can be interpreted as hex
+            [new \stdClass()],
+            [['array']],
+        ];
+    }
+
+    /**
      * Data provider for valid keys.
      *
      * @return array
@@ -122,6 +141,22 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('value', $this->cache->get('key2'));
         sleep(2);
         $this->assertNull($this->cache->get('key2'), 'Value must expire after ttl.');
+    }
+
+    public function testSetTtl()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->cache->set('key0', 'value');
+        $this->cache->set('key0', 'value', 0);
+        $this->assertNull($this->cache->get('key0'));
+        $this->assertFalse($this->cache->has('key0'));
+
+        $this->cache->set('key1', 'value', -1);
+        $this->assertNull($this->cache->get('key1'));
+        $this->assertFalse($this->cache->has('key1'));
     }
 
     public function testGet()
@@ -183,6 +218,17 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('value4', $this->cache->get('key4'));
         sleep(2);
         $this->assertNull($this->cache->get('key4'), 'Value must expire after ttl.');
+    }
+
+    public function testSetMultipleTtl()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->cache->setMultiple(['key0' => 'value0', 'key1' => 'value1'], 0);
+        $this->assertNull($this->cache->get('key0'));
+        $this->assertNull($this->cache->get('key1'));
     }
 
     public function testSetMultipleWithGenerator()
@@ -391,6 +437,34 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         $this->cache->deleteMultiple(['key1', $key, 'key2']);
     }
 
+
+    /**
+     * @expectedException \Psr\SimpleCache\InvalidArgumentException
+     * @dataProvider invalidTtl
+     */
+    public function testSetInvalidTtl($ttl)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->cache->set('key', 'value', $ttl);
+    }
+
+
+    /**
+     * @expectedException \Psr\SimpleCache\InvalidArgumentException
+     * @dataProvider invalidTtl
+     */
+    public function testSetMultipleInvalidTtl($ttl)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->cache->setMultiple(['key' => 'value'], $ttl);
+    }
+
     public function testNullOverwrite()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -537,5 +611,31 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         foreach ($result as $r) {
             $this->assertEquals($data, $r);
         }
+    }
+
+    public function testObjectAsDefaultValue()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $obj = new \stdClass();
+        $obj->foo = 'value';
+        $this->assertEquals($obj, $this->cache->get('key', $obj));
+    }
+
+    public function testObjectDoesNotChangeInCache()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $obj = new \stdClass();
+        $obj->foo = 'value';
+        $this->cache->set('key', $obj);
+        $obj->foo = 'changed';
+
+        $cacheObject = $this->cache->get('key');
+        $this->assertEquals('value', $cacheObject->foo, 'Object in cache should not have their values changed.');
     }
 }
