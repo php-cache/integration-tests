@@ -1,10 +1,11 @@
 {
     "name":        "cache/integration-tests",
     "type":        "library",
-    "description": "Integration tests for PSR-6 cache implementations",
+    "description": "Integration tests for PSR-6 and PSR-16 cache implementations",
     "keywords":    [
         "cache",
         "psr6",
+        "psr16",
         "test"
     ],
     "homepage":    "https://github.com/php-cache/integration-tests",

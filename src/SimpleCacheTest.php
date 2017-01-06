@@ -130,6 +130,13 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         $result = $this->cache->set('key', 'value');
         $this->assertTrue($result, 'set() must return true if success');
         $this->assertEquals('value', $this->cache->get('key'));
+    }
+
+    public function testSetTtl()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
 
         $result = $this->cache->set('key1', 'value', 1);
         $this->assertTrue($result, 'set() must return true if success');
@@ -143,7 +150,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->cache->get('key2'), 'Value must expire after ttl.');
     }
 
-    public function testSetTtl()
+    public function testSetExpiredTtl()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
@@ -207,6 +214,17 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('value0', $this->cache->get('key0'));
         $this->assertEquals('value1', $this->cache->get('key1'));
 
+        $result = $this->cache->setMultiple(['0' => 'value0']);
+        $this->assertTrue($result, 'setMultiple() must return true if success');
+        $this->assertEquals('value0', $this->cache->get('0'));
+    }
+
+    public function testSetMultipleTtl()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
         $this->cache->setMultiple(['key2' => 'value2', 'key3' => 'value3'], 1);
         $this->assertEquals('value2', $this->cache->get('key2'));
         $this->assertEquals('value3', $this->cache->get('key3'));
@@ -220,7 +238,7 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->cache->get('key4'), 'Value must expire after ttl.');
     }
 
-    public function testSetMultipleTtl()
+    public function testSetMultipleExpiredTtl()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
@@ -363,9 +381,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         }
 
         $result = $this->cache->getMultiple(['key1', $key, 'key2']);
-        foreach ($result as $r) {
-            // We want to make sure we iterate over the results
-        }
     }
 
     /**
@@ -378,9 +393,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         }
 
         $result = $this->cache->getMultiple('key');
-        foreach ($result as $r) {
-            // We want to make sure we iterate over the results
-        }
     }
 
     /**
@@ -406,11 +418,16 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
-        if (is_array($key) || is_object($key)) {
-            $this->markTestSkipped('We cannot use objects or arrays as keys. Skipping test.');
+        if (is_int($key)) {
+            $this->markTestSkipped('As keys, strings are always casted to ints so they should be accepted');
         }
 
-        $this->cache->setMultiple(['key1' => 'foo', $key => 'bar', 'key2' => 'baz']);
+        $values = function () use ($key) {
+            yield 'key1' => 'foo';
+            yield $key => 'bar';
+            yield 'key2' => 'baz';
+        };
+        $this->cache->setMultiple($values());
     }
 
     /**
