@@ -272,19 +272,27 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         }
 
         $result = $this->cache->getMultiple(['key0', 'key1']);
-        foreach ($result as $r) {
+        $keys   = [];
+        foreach ($result as $i => $r) {
+            $keys[] = $i;
             $this->assertNull($r);
         }
+        sort($keys);
+        $this->assertSame(['key0', 'key1'], $keys);
 
         $this->cache->set('key3', 'value');
         $result = $this->cache->getMultiple(['key2', 'key3', 'key4'], 'foo');
+        $keys   = [];
         foreach ($result as $key => $r) {
+            $keys[] = $key;
             if ($key === 'key3') {
                 $this->assertEquals('value', $r);
             } else {
                 $this->assertEquals('foo', $r);
             }
         }
+        sort($keys);
+        $this->assertSame(['key2', 'key3', 'key4'], $keys);
     }
 
     public function testGetMultipleWithGenerator()
@@ -294,13 +302,15 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         }
 
         $gen = function () {
-            yield 'key0';
-            yield 'key1';
+            yield 1 => 'key0';
+            yield 1 => 'key1';
         };
 
         $this->cache->set('key0', 'value0');
         $result = $this->cache->getMultiple($gen());
+        $keys   = [];
         foreach ($result as $key => $r) {
+            $keys[] = $key;
             if ($key === 'key0') {
                 $this->assertEquals('value0', $r);
             } elseif ($key === 'key1') {
@@ -309,6 +319,8 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
                 $this->assertFalse(true, 'This should not happend');
             }
         }
+        sort($keys);
+        $this->assertSame(['key0', 'key1'], $keys);
         $this->assertEquals('value0', $this->cache->get('key0'));
         $this->assertNull($this->cache->get('key1'));
     }
@@ -336,8 +348,8 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         }
 
         $gen = function () {
-            yield 'key0';
-            yield 'key1';
+            yield 1 => 'key0';
+            yield 1 => 'key1';
         };
         $this->cache->set('key0', 'value0');
         $this->assertTrue($this->cache->deleteMultiple($gen()), 'Deleting a generator should return true');
@@ -632,10 +644,13 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
 
         $this->cache->setMultiple([$key => 'foobar']);
         $result = $this->cache->getMultiple([$key]);
+        $keys   = [];
         foreach ($result as $i => $r) {
+            $keys[] = $i;
             $this->assertEquals($key, $i);
             $this->assertEquals('foobar', $r);
         }
+        $this->assertSame([$key], $keys);
     }
 
     /**
@@ -662,9 +677,12 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
 
         $this->cache->setMultiple(['key' => $data]);
         $result = $this->cache->getMultiple(['key']);
-        foreach ($result as $r) {
+        $keys   = [];
+        foreach ($result as $i => $r) {
+            $keys[] = $i;
             $this->assertEquals($data, $r);
         }
+        $this->assertSame(['key'], $keys);
     }
 
     public function testObjectAsDefaultValue()
