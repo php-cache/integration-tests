@@ -13,11 +13,12 @@
   >
   <testsuites>
     <testsuite name="PHPCache">
-      <directory>./vendor/cache/cache/src/Adapter/Redis/tests/</directory>
+      <directory>./vendor/cache/cache/src/Adapter/Redis/Tests/</directory>
+      <directory>./vendor/cache/cache/src/Bridge/SimpleCache/Tests/</directory>
     </testsuite>
 
     <testsuite name="Symfony">
-      <file>./vendor/symfony/cache/Tests/Adapter/RedisAdapterTest.php</file>
+      <file>./vendor/symfony/cache/Tests/Adapter/FilesystemAdapterTest.php</file>
     </testsuite>
 
     <testsuite name="Stash">
@@ -28,12 +29,6 @@
       <file>./vendor/madewithlove/illuminate-psr-cache-bridge/tests/integration/IntegrationTest.php</file>
     </testsuite>
   </testsuites>
-
-  <logging>
-    <log type="coverage-text" target="php://stdout"/>
-    <log type="coverage-html" target="./coverageReport"/>
-  </logging>
-
 
   <filter>
     <whitelist>
