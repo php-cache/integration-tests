@@ -72,25 +72,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return array
-     */
-    public static function invalidTtl()
-    {
-        return [
-            [''],
-            [true],
-            [false],
-            ['abc'],
-            [2.5],
-            [' 1'], // can be casted to a int
-            ['12foo'], // can be casted to a int
-            ['025'], // can be interpreted as hex
-            [new \stdClass()],
-            [['array']],
-        ];
-    }
-
-    /**
      * Data provider for valid keys.
      *
      * @return array
@@ -503,32 +484,6 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->cache->deleteMultiple('key');
-    }
-
-    /**
-     * @expectedException \Psr\SimpleCache\InvalidArgumentException
-     * @dataProvider invalidTtl
-     */
-    public function testSetInvalidTtl($ttl)
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-        }
-
-        $this->cache->set('key', 'value', $ttl);
-    }
-
-    /**
-     * @expectedException \Psr\SimpleCache\InvalidArgumentException
-     * @dataProvider invalidTtl
-     */
-    public function testSetMultipleInvalidTtl($ttl)
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-        }
-
-        $this->cache->setMultiple(['key' => 'value'], $ttl);
     }
 
     public function testNullOverwrite()
