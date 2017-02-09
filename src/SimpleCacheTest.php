@@ -213,6 +213,13 @@ abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($result, 'setMultiple() must return true if success');
         $this->assertEquals('value0', $this->cache->get('key0'));
         $this->assertEquals('value1', $this->cache->get('key1'));
+    }
+
+    public function testSetMultipleWithIntegerArrayKey()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
 
         $result = $this->cache->setMultiple(['0' => 'value0']);
         $this->assertTrue($result, 'setMultiple() must return true if success');
