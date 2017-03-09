@@ -13,8 +13,9 @@ namespace Cache\IntegrationTests;
 
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use PHPUnit\Framework\TestCase;
 
-abstract class CachePoolTest extends \PHPUnit_Framework_TestCase
+abstract class CachePoolTest extends TestCase
 {
     /**
      * @type array with functionName => reason.
