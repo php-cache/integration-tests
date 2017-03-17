@@ -11,9 +11,10 @@
 
 namespace Cache\IntegrationTests;
 
+use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
 
-abstract class SimpleCacheTest extends \PHPUnit_Framework_TestCase
+abstract class SimpleCacheTest extends TestCase
 {
     /**
      * @type array with functionName => reason.

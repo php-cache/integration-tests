@@ -11,12 +11,13 @@
 
 namespace Cache\IntegrationTests;
 
+use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
-abstract class HierarchicalCachePoolTest extends \PHPUnit_Framework_TestCase
+abstract class HierarchicalCachePoolTest extends TestCase
 {
     /**
      * @type array with functionName => reason.
