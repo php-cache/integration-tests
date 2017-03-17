@@ -824,17 +824,19 @@ abstract class CachePoolTest extends TestCase
 
         $item = $this->cache->getItem('key');
         $item->set('value');
+        // get the input data since it might not be "value" (ie encrypted cache)
+        $inputData = $item->get();
         $this->cache->saveDeferred($item);
 
         $item = $this->cache->getItem('key');
         $item->set('new value');
 
         $item = $this->cache->getItem('key');
-        $this->assertEquals('value', $item->get(), 'Items that is put in the deferred queue should not get their values changed');
+        $this->assertEquals($inputData, $item->get(), 'Items that is put in the deferred queue should not get their values changed');
 
         $this->cache->commit();
         $item = $this->cache->getItem('key');
-        $this->assertEquals('value', $item->get(), 'Items that is put in the deferred queue should not get their values changed');
+        $this->assertEquals($inputData, $item->get(), 'Items that is put in the deferred queue should not get their values changed');
     }
 
     public function testSaveDeferredOverwrite()
