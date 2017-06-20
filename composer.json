@@ -24,7 +24,7 @@
         }
     ],
     "require":     {
-        "php":       "^5.4|^7",
+        "php": "^5.4|^7",
         "psr/cache": "~1.0",
         "cache/tag-interop": "^1.0"
     },
@@ -33,6 +33,7 @@
         "cache/cache": "dev-master",
         "symfony/cache": "^3.1",
         "madewithlove/illuminate-psr-cache-bridge": "^1.0",
+        "mockery/mockery": "^1.0",
         "illuminate/cache": "^5.0",
         "tedivm/stash": "dev-master"
     },

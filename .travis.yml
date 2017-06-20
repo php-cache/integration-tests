@@ -34,5 +34,5 @@ install:
   - composer update --prefer-source
 
 script:
-  - phpunit --testsuite $SUITE
+  - ./vendor/bin/phpunit --testsuite $SUITE
 
