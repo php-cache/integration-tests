@@ -8,13 +8,12 @@ env:
   - SUITE=PHPCache
   - SUITE=Symfony
   - SUITE=Stash
-  - SUITE=madewithlove
+  - SUITE=Laravel
 
 matrix:
   fast_finish: true
   allow_failures:
     - env: SUITE=Stash
-    - env: SUITE=madewithlove
 
 services:
   - redis

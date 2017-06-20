@@ -30,11 +30,10 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8.35|^5.4.3",
-        "cache/cache": "dev-master",
+        "cache/cache": "^0.4",
         "symfony/cache": "^3.1",
-        "madewithlove/illuminate-psr-cache-bridge": "^1.0",
-        "illuminate/cache": "^5.0",
-        "tedivm/stash": "dev-master"
+        "illuminate/cache": "^5.4",
+        "tedivm/stash": "^0.14"
     },
     "conflict": {
         "phpunit/phpunit": "<4.8.35|<5.4.3,>=5.0"
