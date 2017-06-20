@@ -12,11 +12,12 @@
 namespace Cache\IntegrationTests;
 
 use Cache\TagInterop\TaggableCacheItemPoolInterface;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
-abstract class TaggableCachePoolTest extends \PHPUnit_Framework_TestCase
+abstract class TaggableCachePoolTest extends TestCase
 {
     /**
      * @type array with functionName => reason.
