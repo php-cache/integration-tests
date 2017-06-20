@@ -25,7 +25,6 @@ cache:
 
 before_install:
   - echo "Disable xdebug" && phpenv config-rm xdebug.ini
-  - travis_retry composer self-update
 
 install:
   - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini

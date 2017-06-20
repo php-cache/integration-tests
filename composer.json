@@ -8,10 +8,9 @@
         "psr16",
         "test"
     ],
-    "homepage":    "https://github.com/php-cache/integration-tests",
-    "license":     "MIT",
-    "minimum-stability": "dev",
-    "authors":     [
+    "homepage": "https://github.com/php-cache/integration-tests",
+    "license": "MIT",
+    "authors": [
         {
             "name":     "Aaron Scherer",
             "email":    "aequasi@gmail.com",
@@ -42,5 +41,7 @@
         "psr-4": {
             "Cache\\IntegrationTests\\": "src/"
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

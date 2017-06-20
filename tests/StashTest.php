@@ -10,8 +10,8 @@
  */
 
 use Cache\IntegrationTests\CachePoolTest as BaseTest;
-use Stash\Pool;
 use Stash\Driver\Redis;
+use Stash\Pool;
 
 class StashTest extends BaseTest
 {
