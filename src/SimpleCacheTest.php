@@ -377,6 +377,25 @@ abstract class SimpleCacheTest extends TestCase
         $this->assertTrue($this->cache->has('key0'));
     }
 
+    public function testBasicUsageWithLongKey()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $key = str_repeat('a', 300);
+
+        $this->assertFalse($this->cache->has($key));
+        $this->assertTrue($this->cache->set($key, 'value'));
+
+        $this->assertTrue($this->cache->has($key));
+        $this->assertSame('value', $this->cache->get($key));
+
+        $this->assertTrue($this->cache->delete($key));
+
+        $this->assertFalse($this->cache->has($key));
+    }
+
     /**
      * @expectedException \Psr\SimpleCache\InvalidArgumentException
      * @dataProvider invalidKeys
