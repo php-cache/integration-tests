@@ -735,6 +735,27 @@ abstract class CachePoolTest extends TestCase
         $this->assertTrue($item->isHit(), 'isHit() should return true when object are stored. ');
     }
 
+    public function testBinaryData()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+
+            return;
+        }
+
+        $data = '';
+        for ($i = 0; $i < 256; $i++) {
+            $data .= chr($i);
+        }
+
+        $item = $this->cache->getItem('key');
+        $item->set($data);
+        $this->cache->save($item);
+
+        $item = $this->cache->getItem('key');
+        $this->assertTrue($data === $item->get(), 'Binary data must survive a round trip.');
+    }
+
     public function testIsHit()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {

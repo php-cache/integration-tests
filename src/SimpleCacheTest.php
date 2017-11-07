@@ -647,6 +647,23 @@ abstract class SimpleCacheTest extends TestCase
         $this->assertEquals($object, $result);
     }
 
+    public function testBinaryData()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $data = '';
+        for ($i = 0; $i < 256; $i++) {
+            $data .= chr($i);
+        }
+
+        $array = ['a' => 'foo', 2 => 'bar'];
+        $this->cache->set('key', $data);
+        $result = $this->cache->get('key');
+        $this->assertTrue($data === $result, 'Binary data must survive a round trip.');
+    }
+
     /**
      * @dataProvider validKeys
      */
