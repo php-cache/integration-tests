@@ -377,6 +377,25 @@ abstract class SimpleCacheTest extends TestCase
         $this->assertTrue($this->cache->has('key0'));
     }
 
+    public function testBasicUsageWithLongKey()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $key = str_repeat('a', 300);
+
+        $this->assertFalse($this->cache->has($key));
+        $this->assertTrue($this->cache->set($key, 'value'));
+
+        $this->assertTrue($this->cache->has($key));
+        $this->assertSame('value', $this->cache->get($key));
+
+        $this->assertTrue($this->cache->delete($key));
+
+        $this->assertFalse($this->cache->has($key));
+    }
+
     /**
      * @expectedException \Psr\SimpleCache\InvalidArgumentException
      * @dataProvider invalidKeys
@@ -626,6 +645,23 @@ abstract class SimpleCacheTest extends TestCase
         $result = $this->cache->get('key');
         $this->assertTrue(is_object($result), 'Wrong data type. If we store object we must get an object back.');
         $this->assertEquals($object, $result);
+    }
+
+    public function testBinaryData()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $data = '';
+        for ($i = 0; $i < 256; $i++) {
+            $data .= chr($i);
+        }
+
+        $array = ['a' => 'foo', 2 => 'bar'];
+        $this->cache->set('key', $data);
+        $result = $this->cache->get('key');
+        $this->assertTrue($data === $result, 'Binary data must survive a round trip.');
     }
 
     /**
