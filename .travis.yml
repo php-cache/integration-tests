@@ -1,5 +1,6 @@
+dist: trusty
 language: php
-sudo: false
+sudo: true
 
 matrix:
   fast_finish: true
@@ -12,18 +13,18 @@ matrix:
       env: SUITE=Laravel
     - php: 7.0
       env: SUITE=Stash
-    - php: 7.1
-      env: SUITE=PHPCache
-    - php: 7.1
-      env: SUITE=Symfony
-    - php: 7.1
-      env: SUITE=Laravel
-    - php: 7.2
-      env: SUITE=PHPCache
-    - php: 7.2
-      env: SUITE=Symfony
-    - php: 7.2
-      env: SUITE=Laravel
+#    - php: 7.1
+#      env: SUITE=PHPCache
+#    - php: 7.1
+#      env: SUITE=Symfony
+#    - php: 7.1
+#      env: SUITE=Laravel
+#    - php: 7.2
+#      env: SUITE=PHPCache
+#    - php: 7.2
+#      env: SUITE=Symfony
+#    - php: 7.2
+#      env: SUITE=Laravel
   allow_failures:
     - env: SUITE=Stash
 
