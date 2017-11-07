@@ -10,6 +10,8 @@
  */
 
 use Cache\IntegrationTests\CachePoolTest as BaseTest;
+use Stash\Driver\Redis;
+use Stash\Pool;
 
 class StashTest extends BaseTest
 {
@@ -17,13 +19,13 @@ class StashTest extends BaseTest
 
     public function createCachePool()
     {
-        return new \Stash\Pool($this->getClient());
+        return new Pool($this->getClient());
     }
 
     private function getClient()
     {
         if ($this->client === null) {
-            $this->client = new \Stash\Driver\Redis(['servers' => [['server' => '127.0.0.1', 'port' => '6379']]]);
+            $this->client = new Redis(['servers' => [['server' => '127.0.0.1', 'port' => '6379']]]);
         }
 
         return $this->client;
