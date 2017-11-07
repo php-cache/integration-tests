@@ -1,19 +1,29 @@
 language: php
 sudo: false
 
-php:
-  - 7.0
-  - 7.1
-  - 7.2
-
-env:
-  - SUITE=PHPCache
-  - SUITE=Symfony
-  - SUITE=Stash
-  - SUITE=Laravel
-
 matrix:
   fast_finish: true
+  include:
+    - php: 7.0
+      env: SUITE=PHPCache
+    - php: 7.0
+      env: SUITE=Symfony
+    - php: 7.0
+      env: SUITE=Laravel
+    - php: 7.0
+      env: SUITE=Stash
+    - php: 7.1
+      env: SUITE=PHPCache
+    - php: 7.1
+      env: SUITE=Symfony
+    - php: 7.1
+      env: SUITE=Laravel
+    - php: 7.2
+      env: SUITE=PHPCache
+    - php: 7.2
+      env: SUITE=Symfony
+    - php: 7.2
+      env: SUITE=Laravel
   allow_failures:
     - env: SUITE=Stash
 
