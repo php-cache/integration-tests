@@ -690,7 +690,7 @@ abstract class CachePoolTest extends TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
-        $item  = $this->cache->getItem('key');
+        $item = $this->cache->getItem('key');
         $item->set(true);
         $this->cache->save($item);
 
