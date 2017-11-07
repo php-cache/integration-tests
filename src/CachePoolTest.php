@@ -72,39 +72,6 @@ abstract class CachePoolTest extends TestCase
         ];
     }
 
-    public function testBasicUsage()
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-        }
-
-        $item = $this->cache->getItem('key');
-        $item->set('4711');
-        $this->cache->save($item);
-
-        $item = $this->cache->getItem('key2');
-        $item->set('4712');
-        $this->cache->save($item);
-
-        $fooItem = $this->cache->getItem('key');
-        $this->assertTrue($fooItem->isHit());
-        $this->assertEquals('4711', $fooItem->get());
-
-        $barItem = $this->cache->getItem('key2');
-        $this->assertTrue($barItem->isHit());
-        $this->assertEquals('4712', $barItem->get());
-
-        // Remove 'key' and make sure 'key2' is still there
-        $this->cache->deleteItem('key');
-        $this->assertFalse($this->cache->getItem('key')->isHit());
-        $this->assertTrue($this->cache->getItem('key2')->isHit());
-
-        // Remove everything
-        $this->cache->clear();
-        $this->assertFalse($this->cache->getItem('key')->isHit());
-        $this->assertFalse($this->cache->getItem('key2')->isHit());
-    }
-
     public function testBasicUsageWithLongKey()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {

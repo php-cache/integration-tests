@@ -46,26 +46,6 @@ abstract class HierarchicalCachePoolTest extends TestCase
         }
     }
 
-    public function testBasicUsage()
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
-        }
-
-        $user = 4711;
-        for ($i = 0; $i < 10; $i++) {
-            $item = $this->cache->getItem(sprintf('|users|%d|followers|%d|likes', $user, $i));
-            $item->set('Justin Bieber');
-            $this->cache->save($item);
-        }
-
-        $this->assertTrue($this->cache->hasItem('|users|4711|followers|4|likes'));
-        $this->cache->deleteItem('|users|4711|followers');
-        $this->assertFalse($this->cache->hasItem('|users|4711|followers|4|likes'));
-    }
-
     public function testChain()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
