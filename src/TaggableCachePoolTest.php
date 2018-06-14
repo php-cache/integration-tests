@@ -27,7 +27,7 @@ abstract class TaggableCachePoolTest extends TestCase
     /**
      * @type TaggableCacheItemPoolInterface
      */
-    private $cache;
+    protected $cache;
 
     /**
      * @return TaggableCacheItemPoolInterface that is used in the tests
