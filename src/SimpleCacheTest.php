@@ -165,6 +165,9 @@ abstract class SimpleCacheTest extends TestCase
         $this->assertEquals('value', $this->cache->get('key'));
     }
 
+    /**
+     * @medium
+     */
     public function testSetTtl()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -260,6 +263,9 @@ abstract class SimpleCacheTest extends TestCase
         $this->assertEquals('value0', $this->cache->get('0'));
     }
 
+    /**
+     * @medium
+     */
     public function testSetMultipleTtl()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
