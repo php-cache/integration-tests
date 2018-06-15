@@ -27,7 +27,7 @@ abstract class HierarchicalCachePoolTest extends TestCase
     /**
      * @type CacheItemPoolInterface
      */
-    private $cache;
+    protected $cache;
 
     /**
      * @return CacheItemPoolInterface that is used in the tests

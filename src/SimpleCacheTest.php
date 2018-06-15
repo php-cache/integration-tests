@@ -24,7 +24,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @type CacheInterface
      */
-    private $cache;
+    protected $cache;
 
     /**
      * @return CacheInterface that is used in the tests
