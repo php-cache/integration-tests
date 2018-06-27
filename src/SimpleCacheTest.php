@@ -27,19 +27,33 @@ abstract class SimpleCacheTest extends TestCase
     protected $cache;
 
     /**
+     * @var CacheInterface
+     */
+    protected $failingCache;
+
+    /**
      * @return CacheInterface that is used in the tests
      */
     abstract public function createSimpleCache();
 
+    /**
+     * @return CacheInterface that is used in tests that check failure cases
+     */
+    abstract public function createFailingSimpleCache();
+
     protected function setUp()
     {
         $this->cache = $this->createSimpleCache();
+        $this->failingCache = $this->createFailingSimpleCache();
     }
 
     protected function tearDown()
     {
         if ($this->cache !== null) {
             $this->cache->clear();
+        }
+        if ($this->failingCache !== null) {
+            $this->failingCache->clear();
         }
     }
 
@@ -753,5 +767,16 @@ abstract class SimpleCacheTest extends TestCase
 
         $cacheObject = $this->cache->get('key');
         $this->assertEquals('value', $cacheObject->foo, 'Object in cache should not have their values changed.');
+    }
+
+    public function testSetFailure()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $result = $this->failingCache->set('key', 'value');
+        $this->assertFalse($result, 'set() must return false if failure');
+        $this->assertNull($this->cache->get('key'), 'Value should not be set after failure');
     }
 }
