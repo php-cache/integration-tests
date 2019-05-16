@@ -44,18 +44,32 @@ abstract class SimpleCacheTest extends TestCase
     }
 
     /**
-     * Data provider for invalid keys.
+     * Data provider for invalid cache keys.
      *
      * @return array
      */
     public static function invalidKeys()
+    {
+        return array_merge(
+            self::invalidArrayKeys(),
+            [
+                [2],
+            ]
+        );
+    }
+
+    /**
+     * Data provider for invalid array keys.
+     *
+     * @return array
+     */
+    public static function invalidArrayKeys()
     {
         return [
             [''],
             [true],
             [false],
             [null],
-            [2],
             [2.5],
             ['{str'],
             ['rand{'],
@@ -449,16 +463,12 @@ abstract class SimpleCacheTest extends TestCase
 
     /**
      * @expectedException \Psr\SimpleCache\InvalidArgumentException
-     * @dataProvider invalidKeys
+     * @dataProvider invalidArrayKeys
      */
     public function testSetMultipleInvalidKeys($key)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-        }
-
-        if (is_int($key)) {
-            $this->markTestSkipped('As keys, strings are always casted to ints so they should be accepted');
         }
 
         $values = function () use ($key) {
