@@ -13,9 +13,12 @@ namespace Cache\IntegrationTests;
 
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
+use Symfony\Bridge\PhpUnit\ForwardCompatTestTrait;
 
 abstract class SimpleCacheTest extends TestCase
 {
+    use ForwardCompatTestTrait;
+
     /**
      * @type array with functionName => reason.
      */
@@ -46,12 +49,12 @@ abstract class SimpleCacheTest extends TestCase
         sleep($seconds);
     }
 
-    protected function setUp()
+    private function doSetUp()
     {
         $this->cache = $this->createSimpleCache();
     }
 
-    protected function tearDown()
+    private function doTearDown()
     {
         if ($this->cache !== null) {
             $this->cache->clear();

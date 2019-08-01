@@ -14,9 +14,12 @@ namespace Cache\IntegrationTests;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Bridge\PhpUnit\ForwardCompatTestTrait;
 
 abstract class CachePoolTest extends TestCase
 {
+    use ForwardCompatTestTrait;
+
     /**
      * @type array with functionName => reason.
      */
@@ -32,12 +35,12 @@ abstract class CachePoolTest extends TestCase
      */
     abstract public function createCachePool();
 
-    protected function setUp()
+    private function doSetUp()
     {
         $this->cache = $this->createCachePool();
     }
 
-    protected function tearDown()
+    private function doTearDown()
     {
         if ($this->cache !== null) {
             $this->cache->clear();

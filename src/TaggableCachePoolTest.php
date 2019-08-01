@@ -13,12 +13,15 @@ namespace Cache\IntegrationTests;
 
 use Cache\TagInterop\TaggableCacheItemPoolInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\PhpUnit\ForwardCompatTestTrait;
 
 /**
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
 abstract class TaggableCachePoolTest extends TestCase
 {
+    use ForwardCompatTestTrait;
+
     /**
      * @type array with functionName => reason.
      */
@@ -34,12 +37,12 @@ abstract class TaggableCachePoolTest extends TestCase
      */
     abstract public function createCachePool();
 
-    protected function setUp()
+    private function doSetUp()
     {
         $this->cache = $this->createCachePool();
     }
 
-    protected function tearDown()
+    private function doTearDown()
     {
         if ($this->cache !== null) {
             $this->cache->clear();
