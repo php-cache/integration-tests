@@ -13,12 +13,15 @@ namespace Cache\IntegrationTests;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Bridge\PhpUnit\ForwardCompatTestTrait;
 
 /**
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
 abstract class HierarchicalCachePoolTest extends TestCase
 {
+    use ForwardCompatTestTrait;
+
     /**
      * @type array with functionName => reason.
      */
@@ -34,12 +37,12 @@ abstract class HierarchicalCachePoolTest extends TestCase
      */
     abstract public function createCachePool();
 
-    protected function setUp()
+    private function doSetUp()
     {
         $this->cache = $this->createCachePool();
     }
 
-    protected function tearDown()
+    private function doTearDown()
     {
         if ($this->cache !== null) {
             $this->cache->clear();
