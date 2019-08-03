@@ -14,11 +14,11 @@ namespace Cache\IntegrationTests;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
-use Symfony\Bridge\PhpUnit\ForwardCompatTestTrait;
+use Symfony\Bridge\PhpUnit\SetUpTearDownTrait;
 
 abstract class CachePoolTest extends TestCase
 {
-    use ForwardCompatTestTrait;
+    use SetUpTearDownTrait;
 
     /**
      * @type array with functionName => reason.
