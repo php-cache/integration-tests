@@ -559,7 +559,6 @@ abstract class CachePoolTest extends TestCase
     }
 
     /**
-     * @expectedException \Psr\Cache\InvalidArgumentException
      * @dataProvider invalidKeys
      */
     public function testGetItemInvalidKeys($key)
@@ -568,11 +567,11 @@ abstract class CachePoolTest extends TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
+        $this->expectException('Psr\Cache\InvalidArgumentException');
         $this->cache->getItem($key);
     }
 
     /**
-     * @expectedException \Psr\Cache\InvalidArgumentException
      * @dataProvider invalidKeys
      */
     public function testGetItemsInvalidKeys($key)
@@ -581,11 +580,11 @@ abstract class CachePoolTest extends TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
+        $this->expectException('Psr\Cache\InvalidArgumentException');
         $this->cache->getItems(['key1', $key, 'key2']);
     }
 
     /**
-     * @expectedException \Psr\Cache\InvalidArgumentException
      * @dataProvider invalidKeys
      */
     public function testHasItemInvalidKeys($key)
@@ -594,11 +593,11 @@ abstract class CachePoolTest extends TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
+        $this->expectException('Psr\Cache\InvalidArgumentException');
         $this->cache->hasItem($key);
     }
 
     /**
-     * @expectedException \Psr\Cache\InvalidArgumentException
      * @dataProvider invalidKeys
      */
     public function testDeleteItemInvalidKeys($key)
@@ -607,11 +606,11 @@ abstract class CachePoolTest extends TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
+        $this->expectException('Psr\Cache\InvalidArgumentException');
         $this->cache->deleteItem($key);
     }
 
     /**
-     * @expectedException \Psr\Cache\InvalidArgumentException
      * @dataProvider invalidKeys
      */
     public function testDeleteItemsInvalidKeys($key)
@@ -620,6 +619,7 @@ abstract class CachePoolTest extends TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
+        $this->expectException('Psr\Cache\InvalidArgumentException');
         $this->cache->deleteItems(['key1', $key, 'key2']);
     }
 
@@ -742,8 +742,6 @@ abstract class CachePoolTest extends TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $data = '';
