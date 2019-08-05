@@ -2,6 +2,10 @@ dist: trusty
 language: php
 sudo: true
 
+env:
+  global:
+    - SYMFONY_PHPUNIT_VERSION=5.7
+
 matrix:
   fast_finish: true
   include:
@@ -37,5 +41,5 @@ install:
   - composer update --prefer-source
 
 script:
-  - ./vendor/bin/phpunit --testsuite $SUITE
+  - ./vendor/bin/simple-phpunit --testsuite $SUITE
 

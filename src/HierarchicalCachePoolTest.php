@@ -53,8 +53,6 @@ abstract class HierarchicalCachePoolTest extends TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $user = 4711;
@@ -73,8 +71,6 @@ abstract class HierarchicalCachePoolTest extends TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $item = $this->cache->getItem('|aaa|bbb|ccc|ddd');
@@ -117,8 +113,6 @@ abstract class HierarchicalCachePoolTest extends TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $item = $this->cache->getItem('foo');
@@ -138,8 +132,6 @@ abstract class HierarchicalCachePoolTest extends TestCase
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-
-            return;
         }
 
         $item = $this->cache->getItem('|aaa|bbb');
