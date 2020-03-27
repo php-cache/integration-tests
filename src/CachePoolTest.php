@@ -116,7 +116,7 @@ abstract class CachePoolTest extends TestCase
 
         $pool = $this->createCachePool();
 
-        $key = str_repeat('a', 300);
+        $key = str_repeat('a', 250);
 
         $item = $pool->getItem($key);
         $this->assertFalse($item->isHit());
