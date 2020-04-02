@@ -11,6 +11,7 @@
 
 namespace Cache\IntegrationTests;
 
+use Generator;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
@@ -581,7 +582,11 @@ abstract class CachePoolTest extends TestCase
         }
 
         $this->expectException('Psr\Cache\InvalidArgumentException');
-        $this->cache->getItems(['key1', $key, 'key2']);
+        $items = $this->cache->getItems(['key1', $key, 'key2']);
+
+        if ($items instanceof Generator) {
+            iterator_to_array($items);
+        }
     }
 
     /**
