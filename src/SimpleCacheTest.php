@@ -280,7 +280,6 @@ abstract class SimpleCacheTest extends TestCase
         $this->assertEquals('value4', $this->cache->get('key4'));
 
         $this->advanceTime(3);
-
         $this->assertNull($this->cache->get('key2'), 'Value must expire after ttl.');
         $this->assertNull($this->cache->get('key3'), 'Value must expire after ttl.');
         $this->assertNull($this->cache->get('key4'), 'Value must expire after ttl.');
