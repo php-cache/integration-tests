@@ -165,21 +165,25 @@ abstract class SimpleCacheTest extends TestCase
         $this->assertEquals('value', $this->cache->get('key'));
     }
 
+    /**
+     * @medium
+     */
     public function testSetTtl()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
-        $result = $this->cache->set('key1', 'value', 1);
+        $result = $this->cache->set('key1', 'value', 2);
         $this->assertTrue($result, 'set() must return true if success');
         $this->assertEquals('value', $this->cache->get('key1'));
-        $this->advanceTime(2);
-        $this->assertNull($this->cache->get('key1'), 'Value must expire after ttl.');
 
-        $this->cache->set('key2', 'value', new \DateInterval('PT1S'));
+        $this->cache->set('key2', 'value', new \DateInterval('PT2S'));
         $this->assertEquals('value', $this->cache->get('key2'));
-        $this->advanceTime(2);
+
+        $this->advanceTime(3);
+
+        $this->assertNull($this->cache->get('key1'), 'Value must expire after ttl.');
         $this->assertNull($this->cache->get('key2'), 'Value must expire after ttl.');
     }
 
@@ -259,22 +263,25 @@ abstract class SimpleCacheTest extends TestCase
         $this->assertEquals('value0', $this->cache->get('0'));
     }
 
+    /**
+     * @medium
+     */
     public function testSetMultipleTtl()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
-        $this->cache->setMultiple(['key2' => 'value2', 'key3' => 'value3'], 1);
+        $this->cache->setMultiple(['key2' => 'value2', 'key3' => 'value3'], 2);
         $this->assertEquals('value2', $this->cache->get('key2'));
         $this->assertEquals('value3', $this->cache->get('key3'));
-        $this->advanceTime(2);
+
+        $this->cache->setMultiple(['key4' => 'value4'], new \DateInterval('PT2S'));
+        $this->assertEquals('value4', $this->cache->get('key4'));
+
+        $this->advanceTime(3);
         $this->assertNull($this->cache->get('key2'), 'Value must expire after ttl.');
         $this->assertNull($this->cache->get('key3'), 'Value must expire after ttl.');
-
-        $this->cache->setMultiple(['key4' => 'value4'], new \DateInterval('PT1S'));
-        $this->assertEquals('value4', $this->cache->get('key4'));
-        $this->advanceTime(2);
         $this->assertNull($this->cache->get('key4'), 'Value must expire after ttl.');
     }
 

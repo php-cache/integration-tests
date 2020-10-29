@@ -482,6 +482,9 @@ abstract class CachePoolTest extends TestCase
         $this->assertTrue($return, 'commit() should return true even if no items were deferred. ');
     }
 
+    /**
+     * @medium
+     */
     public function testExpiration()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -848,6 +851,9 @@ abstract class CachePoolTest extends TestCase
         $this->assertInstanceOf('DateTime', $value, 'You must be able to store objects in cache.');
     }
 
+    /**
+     * @medium
+     */
     public function testHasItemReturnsFalseWhenDeferredItemIsExpired()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
