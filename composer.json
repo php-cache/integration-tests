@@ -25,12 +25,12 @@
     "require":     {
         "php": ">=5.5.9",
         "psr/cache": "~1.0",
-        "cache/tag-interop": "^1.0",
-        "symfony/phpunit-bridge": "^4.4|^5.0"
+        "cache/tag-interop": "^1.0"
     },
     "require-dev": {
         "cache/cache": "^1.0",
         "symfony/cache": "^3.4.31|^4.3.4|^5.0",
+        "symfony/phpunit-bridge": "^4.4|^5.0",
         "illuminate/cache": "^5.4|^5.5|^5.6",
         "tedivm/stash": "^0.14",
         "mockery/mockery": "^1.0"
