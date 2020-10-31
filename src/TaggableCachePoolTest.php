@@ -13,15 +13,12 @@ namespace Cache\IntegrationTests;
 
 use Cache\TagInterop\TaggableCacheItemPoolInterface;
 use PHPUnit\Framework\TestCase;
-use Symfony\Bridge\PhpUnit\SetUpTearDownTrait;
 
 /**
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
 abstract class TaggableCachePoolTest extends TestCase
 {
-    use SetUpTearDownTrait;
-
     /**
      * @type array with functionName => reason.
      */
@@ -37,12 +34,18 @@ abstract class TaggableCachePoolTest extends TestCase
      */
     abstract public function createCachePool();
 
-    private function doSetUp()
+    /**
+     * @before
+     */
+    public function setupService()
     {
         $this->cache = $this->createCachePool();
     }
 
-    private function doTearDown()
+    /**
+     * @after
+     */
+    public function tearDownService()
     {
         if ($this->cache !== null) {
             $this->cache->clear();
