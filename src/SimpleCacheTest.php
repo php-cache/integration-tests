@@ -13,12 +13,9 @@ namespace Cache\IntegrationTests;
 
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
-use Symfony\Bridge\PhpUnit\SetUpTearDownTrait;
 
 abstract class SimpleCacheTest extends TestCase
 {
-    use SetUpTearDownTrait;
-
     /**
      * @type array with functionName => reason.
      */
@@ -49,12 +46,18 @@ abstract class SimpleCacheTest extends TestCase
         sleep($seconds);
     }
 
-    private function doSetUp()
+    /**
+     * @before
+     */
+    public function setupService()
     {
         $this->cache = $this->createSimpleCache();
     }
 
-    private function doTearDown()
+    /**
+     * @after
+     */
+    public function tearDownService()
     {
         if ($this->cache !== null) {
             $this->cache->clear();

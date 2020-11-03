@@ -14,12 +14,9 @@ namespace Cache\IntegrationTests;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
-use Symfony\Bridge\PhpUnit\SetUpTearDownTrait;
 
 abstract class CachePoolTest extends TestCase
 {
-    use SetUpTearDownTrait;
-
     /**
      * @type array with functionName => reason.
      */
@@ -35,12 +32,18 @@ abstract class CachePoolTest extends TestCase
      */
     abstract public function createCachePool();
 
-    private function doSetUp()
+    /**
+     * @before
+     */
+    public function setupService()
     {
         $this->cache = $this->createCachePool();
     }
 
-    private function doTearDown()
+    /**
+     * @after
+     */
+    public function tearDownService()
     {
         if ($this->cache !== null) {
             $this->cache->clear();
