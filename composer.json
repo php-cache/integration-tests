@@ -23,9 +23,7 @@
         }
     ],
     "require":     {
-        "php": ">=5.5.9",
-        "psr/cache": "~1.0",
-        "cache/tag-interop": "^1.0"
+        "php": ">=5.5.9"
     },
     "require-dev": {
         "cache/cache": "^1.0",
