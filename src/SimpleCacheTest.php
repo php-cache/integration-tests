@@ -17,7 +17,7 @@ use Psr\SimpleCache\CacheInterface;
 abstract class SimpleCacheTest extends TestCase
 {
     /**
-     * @type array with functionName => reason.
+     * @var array<string,string> with functionName => reason.
      */
     protected $skippedTests = [];
 

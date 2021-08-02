@@ -18,7 +18,7 @@ use Psr\Cache\CacheItemPoolInterface;
 abstract class CachePoolTest extends TestCase
 {
     /**
-     * @type array with functionName => reason.
+     * @var array<string,string> with functionName => reason.
      */
     protected $skippedTests = [];
 
