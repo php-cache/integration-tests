@@ -15,7 +15,6 @@ use PHPUnit\Framework\Attributes\After;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\Medium;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
@@ -495,7 +494,7 @@ abstract class CachePoolTest extends TestCase
     /**
      * @medium
      */
-    #[Medium]
+    #[Group('slow')]
     public function testExpiration()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -870,7 +869,7 @@ abstract class CachePoolTest extends TestCase
     /**
      * @medium
      */
-    #[Medium]
+    #[Group('slow')]
     public function testHasItemReturnsFalseWhenDeferredItemIsExpired()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
