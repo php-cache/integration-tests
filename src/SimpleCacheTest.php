@@ -11,6 +11,11 @@
 
 namespace Cache\IntegrationTests;
 
+use PHPUnit\Framework\Attributes\After;
+use PHPUnit\Framework\Attributes\Before;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Medium;
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
 
@@ -49,6 +54,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @before
      */
+    #[Before]
     public function setupService()
     {
         $this->cache = $this->createSimpleCache();
@@ -57,6 +63,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @after
      */
+    #[After]
     public function tearDownService()
     {
         if ($this->cache !== null) {
@@ -171,6 +178,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @medium
      */
+    #[Medium]
     public function testSetTtl()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -269,6 +277,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @medium
      */
+    #[Medium]
     public function testSetMultipleTtl()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -441,6 +450,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @dataProvider invalidKeys
      */
+    #[DataProvider('invalidKeys')]
     public function testGetInvalidKeys($key)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -454,6 +464,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @dataProvider invalidKeys
      */
+    #[DataProvider('invalidKeys')]
     public function testGetMultipleInvalidKeys($key)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -477,6 +488,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @dataProvider invalidKeys
      */
+    #[DataProvider('invalidKeys')]
     public function testSetInvalidKeys($key)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -490,6 +502,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @dataProvider invalidArrayKeys
      */
+    #[DataProvider('invalidArrayKeys')]
     public function testSetMultipleInvalidKeys($key)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -518,6 +531,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @dataProvider invalidKeys
      */
+    #[DataProvider('invalidKeys')]
     public function testHasInvalidKeys($key)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -531,6 +545,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @dataProvider invalidKeys
      */
+    #[DataProvider('invalidKeys')]
     public function testDeleteInvalidKeys($key)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -544,6 +559,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @dataProvider invalidKeys
      */
+    #[DataProvider('invalidKeys')]
     public function testDeleteMultipleInvalidKeys($key)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -567,6 +583,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @dataProvider invalidTtl
      */
+    #[DataProvider('invalidTtl')]
     public function testSetInvalidTtl($ttl)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -580,6 +597,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @dataProvider invalidTtl
      */
+    #[DataProvider('invalidTtl')]
     public function testSetMultipleInvalidTtl($ttl)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -699,6 +717,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @dataProvider validKeys
      */
+    #[DataProvider('validKeys')]
     public function testSetValidKeys($key)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -712,6 +731,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @dataProvider validKeys
      */
+    #[DataProvider('validKeys')]
     public function testSetMultipleValidKeys($key)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -732,6 +752,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @dataProvider validData
      */
+    #[DataProvider('validData')]
     public function testSetValidData($data)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -745,6 +766,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @dataProvider validData
      */
+    #[DataProvider('validData')]
     public function testSetMultipleValidData($data)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {

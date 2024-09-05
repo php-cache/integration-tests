@@ -11,6 +11,8 @@
 
 namespace Cache\IntegrationTests;
 
+use PHPUnit\Framework\Attributes\After;
+use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 
@@ -37,6 +39,7 @@ abstract class HierarchicalCachePoolTest extends TestCase
     /**
      * @before
      */
+    #[Before]
     public function setupService()
     {
         $this->cache = $this->createCachePool();
@@ -45,6 +48,7 @@ abstract class HierarchicalCachePoolTest extends TestCase
     /**
      * @after
      */
+    #[After]
     public function tearDownService()
     {
         if ($this->cache !== null) {

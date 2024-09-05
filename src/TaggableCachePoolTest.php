@@ -12,6 +12,9 @@
 namespace Cache\IntegrationTests;
 
 use Cache\TagInterop\TaggableCacheItemPoolInterface;
+use PHPUnit\Framework\Attributes\After;
+use PHPUnit\Framework\Attributes\Before;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -37,6 +40,7 @@ abstract class TaggableCachePoolTest extends TestCase
     /**
      * @before
      */
+    #[Before]
     public function setupService()
     {
         $this->cache = $this->createCachePool();
@@ -45,6 +49,7 @@ abstract class TaggableCachePoolTest extends TestCase
     /**
      * @after
      */
+    #[After]
     public function tearDownService()
     {
         if ($this->cache !== null) {
@@ -133,6 +138,7 @@ abstract class TaggableCachePoolTest extends TestCase
     /**
      * @dataProvider invalidKeys
      */
+    #[DataProvider('invalidKeys')]
     public function testTagAccessorWithInvalidTag($tag)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
