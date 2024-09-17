@@ -15,7 +15,6 @@ use PHPUnit\Framework\Attributes\After;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\Medium;
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
 
@@ -178,7 +177,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @medium
      */
-    #[Medium]
+    #[Group('slow')]
     public function testSetTtl()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -277,7 +276,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * @medium
      */
-    #[Medium]
+    #[Group('slow')]
     public function testSetMultipleTtl()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
