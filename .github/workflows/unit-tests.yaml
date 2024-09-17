@@ -1,0 +1,37 @@
+on:
+  push:
+  pull_request:
+
+jobs:
+  phpunit:
+    strategy:
+      matrix:
+        include:
+          - php: 7.0
+            suite: PHPCache
+          - php: 7.0
+            suite: Symfony
+          - php: 7.0
+            suite: Laravel
+#          - php: 7.0
+#            suite: Stash
+          - php: 7.1
+            suite: PHPCache
+#          - php: 7.2
+#            suite: PHPCache
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:6.2.8
+        ports:
+          - 6379:6379
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+      - run: |
+          composer install --no-plugins --prefer-source
+      - run: ./vendor/bin/simple-phpunit --testsuite ${{ matrix.suite }}
+        env:
+          SYMFONY_PHPUNIT_VERSION: '5.7'
