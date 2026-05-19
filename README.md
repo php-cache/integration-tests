@@ -52,6 +52,18 @@ class CacheIntegrationTest extends SimpleCacheTest
 }
 ```
 
+If your implementation uses **psr/simple-cache ^3.0** (with strict PHP type hints), extend `SimpleCacheV3Test` instead. It provides the same test coverage with data providers adapted for v3's typed interface:
+
+```php
+class CacheV3IntegrationTest extends SimpleCacheV3Test
+{
+    public function createSimpleCache()
+    {
+        return new SimpleCache();
+    }
+}
+```
+
 ### Contribute
 
 Contributions are very welcome! Send a pull request or
