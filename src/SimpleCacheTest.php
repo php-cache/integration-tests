@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of php-cache organization.
  *
@@ -71,33 +73,66 @@ abstract class SimpleCacheTest extends TestCase
     }
 
     /**
-     * Data provider for invalid cache keys.
+     * Determine whether the installed psr/simple-cache is v1 (untyped interface).
      *
-     * @return array
+     * v2/v3 introduced parameter type hints (string $key, iterable $keys,
+     * null|int|\DateInterval $ttl). When those type hints are present, passing
+     * a non-string key or invalid TTL causes a PHP \TypeError before the
+     * library code runs. This helper lets data providers and tests adapt
+     * automatically so a single test class works with all three versions.
+     *
+     * The result is cached for the duration of the PHPUnit process.
+     *
+     * @return bool
      */
-    public static function invalidKeys()
+    private static function isPsr16V1(): bool
     {
-        return array_merge(
-            self::invalidArrayKeys(),
-            [
-                [2],
-            ]
-        );
+        static $isV1 = null;
+        if ($isV1 !== null) {
+            return $isV1;
+        }
+
+        if (!class_exists(\Composer\InstalledVersions::class)) {
+            $isV1 = true;
+            return $isV1;
+        }
+
+        if (!\Composer\InstalledVersions::isInstalled('psr/simple-cache')) {
+            // Fallback for environments where the package is not tracked
+            // (e.g. manual include). Assume v1 behaviour to stay safe.
+            $isV1 = true;
+            return $isV1;
+        }
+
+        $version = \Composer\InstalledVersions::getVersion('psr/simple-cache');
+        $isV1 = version_compare($version, '2.0.0', '<');
+
+        return $isV1;
     }
 
     /**
-     * Data provider for invalid array keys.
+     * Data provider for invalid cache keys.
      *
-     * @return array
+     * On v1, includes every invalid key type (string syntax, non-string type).
+     * On v2/v3, only string-syntax-invalid keys remain; non-string types are
+     * tested via the contract-violation data provider instead.
+     *
+     * @return list<list<mixed>>
      */
-    public static function invalidArrayKeys()
+    public static function invalidKeys()
     {
+        if (self::isPsr16V1()) {
+            return array_merge(
+                self::invalidArrayKeys(),
+                [
+                    [2],
+                ]
+            );
+        }
+
+        // v2/v3: only syntax violations survive PHP type hints
         return [
             [''],
-            [true],
-            [false],
-            [null],
-            [2.5],
             ['{str'],
             ['rand{'],
             ['rand{str'],
@@ -108,34 +143,184 @@ abstract class SimpleCacheTest extends TestCase
             ['rand\\str'],
             ['rand@str'],
             ['rand:str'],
+        ];
+    }
+
+    /**
+     * Data provider for invalid array keys (used in setMultiple).
+     *
+     * @return list<list<mixed>>
+     */
+    public static function invalidArrayKeys()
+    {
+        if (self::isPsr16V1()) {
+            return [
+                [''],
+                [true],
+                [false],
+                [null],
+                [2.5],
+                ['{str'],
+                ['rand{'],
+                ['rand{str'],
+                ['rand}str'],
+                ['rand(str'],
+                ['rand)str'],
+                ['rand/str'],
+                ['rand\\str'],
+                ['rand@str'],
+                ['rand:str'],
+                [new \stdClass()],
+                [['array']],
+            ];
+        }
+
+        return [
+            [''],
+            ['{str'],
+            ['rand{'],
+            ['rand{str'],
+            ['rand}str'],
+            ['rand(str'],
+            ['rand)str'],
+            ['rand/str'],
+            ['rand\\str'],
+            ['rand@str'],
+            ['rand:str'],
+        ];
+    }
+
+    /**
+     * Data provider for invalid TTL values.
+     *
+     * On v1, includes every invalid TTL type.
+     * On v2/v3, only values that survive PHP's null|int|\DateInterval hint
+     * but are still invalid per the PSR-16 spec remain.
+     *
+     * @return list<list<mixed>>
+     */
+    public static function invalidTtl()
+    {
+        $values = [
+            [''],
+            ['abc'],
+            [new \stdClass()],
+            [['array']],
+        ];
+
+        if (self::isPsr16V1()) {
+            // In v1 all of these reach the library and must throw
+            // InvalidArgumentException.
+            $values = array_merge(
+                $values,
+                [
+                    [true],
+                    [false],
+                    [2.5],
+                    [' 1'],   // can be casted to a int
+                    ['12foo'], // can be casted to a int
+                    ['025'],  // can be interpreted as hex
+                ]
+            );
+        }
+
+        return $values;
+    }
+
+    /**
+     * Data provider for keys whose *type* violates the interface contract.
+     *
+     * These values are only valid when psr/simple-cache ^2.0|^3.0 is installed,
+     * because v2/v3 introduced parameter type hints that reject them with a
+     * PHP \TypeError before the library code runs.
+     *
+     * @return list<list<mixed>>
+     */
+    public static function invalidKeysTypeViolation()
+    {
+        if (self::isPsr16V1()) {
+            return [];
+        }
+
+        return [
+            [true],
+            [false],
+            [null],
+            [2.5],
+            [2],
             [new \stdClass()],
             [['array']],
         ];
     }
 
     /**
-     * @return array
+     * Data provider for array keys whose *type* violates the interface contract.
+     *
+     * Differs from invalidKeysTypeViolation: integer keys are excluded because
+     * PHP arrays/generators auto-cast integer keys to strings (e.g. yield 0 => 'v'),
+     * so an integer key inside an iterable is not a testable contract violation.
+     *
+     * @return list<list<mixed>>
      */
-    public static function invalidTtl()
+    public static function invalidArrayKeysTypeViolation()
     {
+        if (self::isPsr16V1()) {
+            return [];
+        }
+
         return [
-            [''],
             [true],
             [false],
-            ['abc'],
+            [null],
             [2.5],
-            [' 1'], // can be casted to a int
-            ['12foo'], // can be casted to a int
-            ['025'], // can be interpreted as hex
             [new \stdClass()],
             [['array']],
         ];
+    }
+
+    /**
+     * Data provider for TTL values whose *type* violates the interface contract.
+     *
+     * @return list<list<mixed>>
+     */
+    public static function invalidTtlTypeViolation()
+    {
+        if (self::isPsr16V1()) {
+            return [];
+        }
+
+        return [
+            [true],
+            [false],
+            [2.5],
+            [' 1'],
+            ['12foo'],
+            ['025'],
+        ];
+    }
+
+    /**
+     * Accepts either \Psr\SimpleCache\InvalidArgumentException (library-level) or
+     * \TypeError (PHP-level contract violation) as a valid failure.
+     *
+     * @param callable(): void $callable
+     */
+    private function assertCacheExceptionOrTypeError(callable $callable): void
+    {
+        try {
+            $callable();
+            $this->fail('Expected exception to be thrown.');
+        } catch (\TypeError $e) {
+            $this->assertTrue(true);
+        } catch (\Psr\SimpleCache\InvalidArgumentException $e) {
+            $this->assertTrue(true);
+        }
     }
 
     /**
      * Data provider for valid keys.
      *
-     * @return array
+     * @return list<list<string>>
      */
     public static function validKeys()
     {
@@ -148,7 +333,7 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * Data provider for valid data to store.
      *
-     * @return array
+     * @return list<list<mixed>>
      */
     public static function validData()
     {
@@ -461,6 +646,21 @@ abstract class SimpleCacheTest extends TestCase
     }
 
     /**
+     * @dataProvider invalidKeysTypeViolation
+     */
+    #[DataProvider('invalidKeysTypeViolation')]
+    public function testGetInvalidKeysTypeViolation($key)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->assertCacheExceptionOrTypeError(function () use ($key) {
+            $this->cache->get($key);
+        });
+    }
+
+    /**
      * @dataProvider invalidKeys
      */
     #[DataProvider('invalidKeys')]
@@ -474,10 +674,32 @@ abstract class SimpleCacheTest extends TestCase
         $result = $this->cache->getMultiple(['key1', $key, 'key2']);
     }
 
+    /**
+     * @dataProvider invalidKeysTypeViolation
+     */
+    #[DataProvider('invalidKeysTypeViolation')]
+    public function testGetMultipleInvalidKeysTypeViolation($key)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->assertCacheExceptionOrTypeError(function () use ($key) {
+            $this->cache->getMultiple(['key1', $key, 'key2']);
+        });
+    }
+
     public function testGetMultipleNoIterable()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        if (!self::isPsr16V1()) {
+            $this->assertCacheExceptionOrTypeError(function () {
+                $this->cache->getMultiple('key');
+            });
+            return;
         }
 
         $this->expectException('Psr\SimpleCache\InvalidArgumentException');
@@ -499,6 +721,21 @@ abstract class SimpleCacheTest extends TestCase
     }
 
     /**
+     * @dataProvider invalidKeysTypeViolation
+     */
+    #[DataProvider('invalidKeysTypeViolation')]
+    public function testSetInvalidKeysTypeViolation($key)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->assertCacheExceptionOrTypeError(function () use ($key) {
+            $this->cache->set($key, 'foobar');
+        });
+    }
+
+    /**
      * @dataProvider invalidArrayKeys
      */
     #[DataProvider('invalidArrayKeys')]
@@ -517,10 +754,37 @@ abstract class SimpleCacheTest extends TestCase
         $this->cache->setMultiple($values());
     }
 
+    /**
+     * @dataProvider invalidArrayKeysTypeViolation
+     */
+    #[DataProvider('invalidArrayKeysTypeViolation')]
+    public function testSetMultipleInvalidKeysTypeViolation($key)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->assertCacheExceptionOrTypeError(function () use ($key) {
+            $values = function () use ($key) {
+                yield 'key1' => 'foo';
+                yield $key => 'bar';
+                yield 'key2' => 'baz';
+            };
+            $this->cache->setMultiple($values());
+        });
+    }
+
     public function testSetMultipleNoIterable()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        if (!self::isPsr16V1()) {
+            $this->assertCacheExceptionOrTypeError(function () {
+                $this->cache->setMultiple('key');
+            });
+            return;
         }
 
         $this->expectException('Psr\SimpleCache\InvalidArgumentException');
@@ -542,6 +806,21 @@ abstract class SimpleCacheTest extends TestCase
     }
 
     /**
+     * @dataProvider invalidKeysTypeViolation
+     */
+    #[DataProvider('invalidKeysTypeViolation')]
+    public function testHasInvalidKeysTypeViolation($key)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->assertCacheExceptionOrTypeError(function () use ($key) {
+            $this->cache->has($key);
+        });
+    }
+
+    /**
      * @dataProvider invalidKeys
      */
     #[DataProvider('invalidKeys')]
@@ -553,6 +832,21 @@ abstract class SimpleCacheTest extends TestCase
 
         $this->expectException('Psr\SimpleCache\InvalidArgumentException');
         $this->cache->delete($key);
+    }
+
+    /**
+     * @dataProvider invalidKeysTypeViolation
+     */
+    #[DataProvider('invalidKeysTypeViolation')]
+    public function testDeleteInvalidKeysTypeViolation($key)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->assertCacheExceptionOrTypeError(function () use ($key) {
+            $this->cache->delete($key);
+        });
     }
 
     /**
@@ -569,10 +863,32 @@ abstract class SimpleCacheTest extends TestCase
         $this->cache->deleteMultiple(['key1', $key, 'key2']);
     }
 
+    /**
+     * @dataProvider invalidKeysTypeViolation
+     */
+    #[DataProvider('invalidKeysTypeViolation')]
+    public function testDeleteMultipleInvalidKeysTypeViolation($key)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->assertCacheExceptionOrTypeError(function () use ($key) {
+            $this->cache->deleteMultiple(['key1', $key, 'key2']);
+        });
+    }
+
     public function testDeleteMultipleNoIterable()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        if (!self::isPsr16V1()) {
+            $this->assertCacheExceptionOrTypeError(function () {
+                $this->cache->deleteMultiple('key');
+            });
+            return;
         }
 
         $this->expectException('Psr\SimpleCache\InvalidArgumentException');
@@ -589,8 +905,30 @@ abstract class SimpleCacheTest extends TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
+        if (!self::isPsr16V1()) {
+            $this->assertCacheExceptionOrTypeError(function () use ($ttl) {
+                $this->cache->set('key', 'value', $ttl);
+            });
+            return;
+        }
+
         $this->expectException('Psr\SimpleCache\InvalidArgumentException');
         $this->cache->set('key', 'value', $ttl);
+    }
+
+    /**
+     * @dataProvider invalidTtlTypeViolation
+     */
+    #[DataProvider('invalidTtlTypeViolation')]
+    public function testSetInvalidTtlTypeViolation($ttl)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->assertCacheExceptionOrTypeError(function () use ($ttl) {
+            $this->cache->set('key', 'value', $ttl);
+        });
     }
 
     /**
@@ -603,8 +941,30 @@ abstract class SimpleCacheTest extends TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
+        if (!self::isPsr16V1()) {
+            $this->assertCacheExceptionOrTypeError(function () use ($ttl) {
+                $this->cache->setMultiple(['key' => 'value'], $ttl);
+            });
+            return;
+        }
+
         $this->expectException('Psr\SimpleCache\InvalidArgumentException');
         $this->cache->setMultiple(['key' => 'value'], $ttl);
+    }
+
+    /**
+     * @dataProvider invalidTtlTypeViolation
+     */
+    #[DataProvider('invalidTtlTypeViolation')]
+    public function testSetMultipleInvalidTtlTypeViolation($ttl)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->assertCacheExceptionOrTypeError(function () use ($ttl) {
+            $this->cache->setMultiple(['key' => 'value'], $ttl);
+        });
     }
 
     public function testNullOverwrite()
@@ -806,5 +1166,32 @@ abstract class SimpleCacheTest extends TestCase
 
         $cacheObject = $this->cache->get('key');
         $this->assertEquals('value', $cacheObject->foo, 'Object in cache should not have their values changed.');
+    }
+
+    /**
+     * Tests the PSR-16 mandated minimum key length of 64 characters.
+     *
+     * PSR-16 explicitly states: "The key length MUST be at least 64 characters."
+     * This test ensures every compliant implementation supports at least 64 chars.
+     *
+     * @see https://www.php-fig.org/psr/psr-16/
+     */
+    public function testBasicUsageWithLongKey64()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $key = str_repeat('a', 64);
+
+        $this->assertFalse($this->cache->has($key));
+        $this->assertTrue($this->cache->set($key, 'value'));
+
+        $this->assertTrue($this->cache->has($key));
+        $this->assertSame('value', $this->cache->get($key));
+
+        $this->assertTrue($this->cache->delete($key));
+
+        $this->assertFalse($this->cache->has($key));
     }
 }
