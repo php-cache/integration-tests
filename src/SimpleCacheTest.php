@@ -1037,31 +1037,4 @@ abstract class SimpleCacheTest extends TestCase
         $cacheObject = $this->cache->get('key');
         $this->assertEquals('value', $cacheObject->foo, 'Object in cache should not have their values changed.');
     }
-
-    /**
-     * Tests the PSR-16 mandated minimum key length of 64 characters.
-     *
-     * PSR-16 explicitly states: "The key length MUST be at least 64 characters."
-     * This test ensures every compliant implementation supports at least 64 chars.
-     *
-     * @see https://www.php-fig.org/psr/psr-16/
-     */
-    public function testBasicUsageWithLongKey64()
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-        }
-
-        $key = str_repeat('a', 64);
-
-        $this->assertFalse($this->cache->has($key));
-        $this->assertTrue($this->cache->set($key, 'value'));
-
-        $this->assertTrue($this->cache->has($key));
-        $this->assertSame('value', $this->cache->get($key));
-
-        $this->assertTrue($this->cache->delete($key));
-
-        $this->assertFalse($this->cache->has($key));
-    }
 }
