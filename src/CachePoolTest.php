@@ -380,9 +380,9 @@ abstract class CachePoolTest extends TestCase
 
         $item = $this->cache->getItem('key');
         $item->set('value');
-        $item->expiresAt(\DateTime::createFromFormat('U', time() + 10));
+        $item->expiresAt(\DateTime::createFromFormat('U', (string) (time() + 10)));
         $this->cache->save($item);
-        $item->expiresAt(\DateTime::createFromFormat('U', time() - 1));
+        $item->expiresAt(\DateTime::createFromFormat('U', (string) (time() - 1)));
         $this->cache->save($item);
         $item = $this->cache->getItem('key');
         $this->assertFalse($item->isHit(), 'Cache should not save expired items');
@@ -441,7 +441,7 @@ abstract class CachePoolTest extends TestCase
 
         $item = $this->cache->getItem('key');
         $item->set('4711');
-        $item->expiresAt(\DateTime::createFromFormat('U', time() - 1));
+        $item->expiresAt(\DateTime::createFromFormat('U', (string) (time() - 1)));
         $this->cache->saveDeferred($item);
 
         $this->assertFalse($this->cache->hasItem('key'), 'Cache should not have expired deferred item');
