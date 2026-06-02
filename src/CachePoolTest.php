@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of php-cache organization.
  *
@@ -53,6 +55,24 @@ abstract class CachePoolTest extends TestCase
     {
         if ($this->cache !== null) {
             $this->cache->clear();
+        }
+    }
+
+    /**
+     * Accepts either \Psr\Cache\InvalidArgumentException (library-level) or
+     * \TypeError (PHP-level contract violation) as a valid failure.
+     *
+     * @param callable(): void $callable
+     */
+    private function assertCacheExceptionOrTypeError(callable $callable): void
+    {
+        try {
+            $callable();
+            $this->fail('Expected exception to be thrown.');
+        } catch (\TypeError $e) {
+            $this->assertTrue(true);
+        } catch (\Psr\Cache\InvalidArgumentException $e) {
+            $this->assertTrue(true);
         }
     }
 
@@ -581,8 +601,9 @@ abstract class CachePoolTest extends TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
-        $this->expectException('Psr\Cache\InvalidArgumentException');
-        $this->cache->getItem($key);
+        $this->assertCacheExceptionOrTypeError(function () use ($key) {
+            $this->cache->getItem($key);
+        });
     }
 
     /**
@@ -609,8 +630,9 @@ abstract class CachePoolTest extends TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
-        $this->expectException('Psr\Cache\InvalidArgumentException');
-        $this->cache->hasItem($key);
+        $this->assertCacheExceptionOrTypeError(function () use ($key) {
+            $this->cache->hasItem($key);
+        });
     }
 
     /**
@@ -623,8 +645,9 @@ abstract class CachePoolTest extends TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
-        $this->expectException('Psr\Cache\InvalidArgumentException');
-        $this->cache->deleteItem($key);
+        $this->assertCacheExceptionOrTypeError(function () use ($key) {
+            $this->cache->deleteItem($key);
+        });
     }
 
     /**
