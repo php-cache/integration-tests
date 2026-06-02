@@ -75,31 +75,15 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * Data provider for invalid cache keys.
      *
+     * These are syntax-invalid string keys that always reach the library
+     * and must throw InvalidArgumentException.
+     *
      * @return array
      */
     public static function invalidKeys()
     {
-        return array_merge(
-            self::invalidArrayKeys(),
-            [
-                [2],
-            ]
-        );
-    }
-
-    /**
-     * Data provider for invalid array keys.
-     *
-     * @return array
-     */
-    public static function invalidArrayKeys()
-    {
         return [
             [''],
-            [true],
-            [false],
-            [null],
-            [2.5],
             ['{str'],
             ['rand{'],
             ['rand{str'],
@@ -110,6 +94,71 @@ abstract class SimpleCacheTest extends TestCase
             ['rand\\str'],
             ['rand@str'],
             ['rand:str'],
+        ];
+    }
+
+    /**
+     * Data provider for keys whose *type* violates the interface contract.
+     *
+     * These are non-string types that may be rejected by PHP \TypeError
+     * (when the implementation has strict type hints) or by library-level
+     * InvalidArgumentException (when the implementation validates manually).
+     *
+     * @return array
+     */
+    public static function invalidKeysTypeViolation()
+    {
+        return [
+            [true],
+            [false],
+            [null],
+            [2.5],
+            [2],
+            [new \stdClass()],
+            [['array']],
+        ];
+    }
+
+    /**
+     * Data provider for invalid array keys (used in setMultiple).
+     *
+     * These are syntax-invalid string keys that always reach the library
+     * and must throw InvalidArgumentException.
+     *
+     * @return array
+     */
+    public static function invalidArrayKeys()
+    {
+        return [
+            [''],
+            ['{str'],
+            ['rand{'],
+            ['rand{str'],
+            ['rand}str'],
+            ['rand(str'],
+            ['rand)str'],
+            ['rand/str'],
+            ['rand\\str'],
+            ['rand@str'],
+            ['rand:str'],
+        ];
+    }
+
+    /**
+     * Data provider for array keys whose *type* violates the interface contract.
+     *
+     * Integer keys are excluded because PHP arrays/generators auto-cast
+     * integer keys to strings (e.g. yield 0 => 'v').
+     *
+     * @return array
+     */
+    public static function invalidArrayKeysTypeViolation()
+    {
+        return [
+            [true],
+            [false],
+            [null],
+            [2.5],
             [new \stdClass()],
             [['array']],
         ];
@@ -118,21 +167,35 @@ abstract class SimpleCacheTest extends TestCase
     /**
      * Data provider for invalid TTL values.
      *
+     * These are values that survive PHP's null|int|\DateInterval type hint
+     * but are still invalid per the PSR-16 spec.
+     *
      * @return array
      */
     public static function invalidTtl()
     {
         return [
             [''],
-            [true],
-            [false],
             ['abc'],
-            [2.5],
-            [' 1'],     // can be casted to an int
-            ['12foo'],  // can be casted to an int
-            ['025'],    // can be interpreted as hex
             [new \stdClass()],
             [['array']],
+        ];
+    }
+
+    /**
+     * Data provider for TTL values whose *type* violates the interface contract.
+     *
+     * @return array
+     */
+    public static function invalidTtlTypeViolation()
+    {
+        return [
+            [true],
+            [false],
+            [2.5],
+            [' 1'],
+            ['12foo'],
+            ['025'],
         ];
     }
 
@@ -478,6 +541,20 @@ abstract class SimpleCacheTest extends TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
+        $this->expectException('Psr\SimpleCache\InvalidArgumentException');
+        $this->cache->get($key);
+    }
+
+    /**
+     * @dataProvider invalidKeysTypeViolation
+     */
+    #[DataProvider('invalidKeysTypeViolation')]
+    public function testGetInvalidKeysTypeViolation($key)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
         $this->assertCacheExceptionOrTypeError(function () use ($key) {
             $this->cache->get($key);
         });
@@ -488,6 +565,20 @@ abstract class SimpleCacheTest extends TestCase
      */
     #[DataProvider('invalidKeys')]
     public function testGetMultipleInvalidKeys($key)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->expectException('Psr\SimpleCache\InvalidArgumentException');
+        $result = $this->cache->getMultiple(['key1', $key, 'key2']);
+    }
+
+    /**
+     * @dataProvider invalidKeysTypeViolation
+     */
+    #[DataProvider('invalidKeysTypeViolation')]
+    public function testGetMultipleInvalidKeysTypeViolation($key)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
@@ -519,6 +610,20 @@ abstract class SimpleCacheTest extends TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
+        $this->expectException('Psr\SimpleCache\InvalidArgumentException');
+        $this->cache->set($key, 'foobar');
+    }
+
+    /**
+     * @dataProvider invalidKeysTypeViolation
+     */
+    #[DataProvider('invalidKeysTypeViolation')]
+    public function testSetInvalidKeysTypeViolation($key)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
         $this->assertCacheExceptionOrTypeError(function () use ($key) {
             $this->cache->set($key, 'foobar');
         });
@@ -539,7 +644,26 @@ abstract class SimpleCacheTest extends TestCase
             yield $key => 'bar';
             yield 'key2' => 'baz';
         };
-        $this->assertCacheExceptionOrTypeError(function () use ($values) {
+        $this->expectException('Psr\SimpleCache\InvalidArgumentException');
+        $this->cache->setMultiple($values());
+    }
+
+    /**
+     * @dataProvider invalidArrayKeysTypeViolation
+     */
+    #[DataProvider('invalidArrayKeysTypeViolation')]
+    public function testSetMultipleInvalidKeysTypeViolation($key)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->assertCacheExceptionOrTypeError(function () use ($key) {
+            $values = function () use ($key) {
+                yield 'key1' => 'foo';
+                yield $key => 'bar';
+                yield 'key2' => 'baz';
+            };
             $this->cache->setMultiple($values());
         });
     }
@@ -565,6 +689,20 @@ abstract class SimpleCacheTest extends TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
+        $this->expectException('Psr\SimpleCache\InvalidArgumentException');
+        $this->cache->has($key);
+    }
+
+    /**
+     * @dataProvider invalidKeysTypeViolation
+     */
+    #[DataProvider('invalidKeysTypeViolation')]
+    public function testHasInvalidKeysTypeViolation($key)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
         $this->assertCacheExceptionOrTypeError(function () use ($key) {
             $this->cache->has($key);
         });
@@ -580,6 +718,20 @@ abstract class SimpleCacheTest extends TestCase
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
+        $this->expectException('Psr\SimpleCache\InvalidArgumentException');
+        $this->cache->delete($key);
+    }
+
+    /**
+     * @dataProvider invalidKeysTypeViolation
+     */
+    #[DataProvider('invalidKeysTypeViolation')]
+    public function testDeleteInvalidKeysTypeViolation($key)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
         $this->assertCacheExceptionOrTypeError(function () use ($key) {
             $this->cache->delete($key);
         });
@@ -590,6 +742,20 @@ abstract class SimpleCacheTest extends TestCase
      */
     #[DataProvider('invalidKeys')]
     public function testDeleteMultipleInvalidKeys($key)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->expectException('Psr\SimpleCache\InvalidArgumentException');
+        $this->cache->deleteMultiple(['key1', $key, 'key2']);
+    }
+
+    /**
+     * @dataProvider invalidKeysTypeViolation
+     */
+    #[DataProvider('invalidKeysTypeViolation')]
+    public function testDeleteMultipleInvalidKeysTypeViolation($key)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
@@ -627,10 +793,40 @@ abstract class SimpleCacheTest extends TestCase
     }
 
     /**
+     * @dataProvider invalidTtlTypeViolation
+     */
+    #[DataProvider('invalidTtlTypeViolation')]
+    public function testSetInvalidTtlTypeViolation($ttl)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->assertCacheExceptionOrTypeError(function () use ($ttl) {
+            $this->cache->set('key', 'value', $ttl);
+        });
+    }
+
+    /**
      * @dataProvider invalidTtl
      */
     #[DataProvider('invalidTtl')]
     public function testSetMultipleInvalidTtl($ttl)
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $this->assertCacheExceptionOrTypeError(function () use ($ttl) {
+            $this->cache->setMultiple(['key' => 'value'], $ttl);
+        });
+    }
+
+    /**
+     * @dataProvider invalidTtlTypeViolation
+     */
+    #[DataProvider('invalidTtlTypeViolation')]
+    public function testSetMultipleInvalidTtlTypeViolation($ttl)
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
