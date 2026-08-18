@@ -24,7 +24,7 @@ final class SimpleCacheTest extends SimpleCacheContract
         return new ValidatingSimpleCache(new Psr16Cache($pool));
     }
 
-    public function testDataProvidersExposeCases(): void
+    public function testDataProvidersExposeCases()
     {
         self::assertNotEmpty(self::invalidKeys());
         self::assertNotEmpty(self::invalidArrayKeys());

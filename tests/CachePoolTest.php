@@ -20,7 +20,7 @@ final class CachePoolTest extends CachePoolContract
         return new ValidatingCachePool(new FilesystemAdapter($this->namespace));
     }
 
-    public function testDataProvidersExposeCases(): void
+    public function testDataProvidersExposeCases()
     {
         self::assertNotEmpty(self::invalidKeys());
         self::assertNotEmpty(self::invalidKeyTypes());

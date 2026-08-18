@@ -16,12 +16,12 @@ final class TaggableCachePoolTest extends TaggableCachePoolContract
         return new TaggableCachePool();
     }
 
-    public function testDataProviderExposesCases(): void
+    public function testDataProviderExposesCases()
     {
         self::assertNotEmpty(self::invalidTags());
     }
 
-    public function testSkippedTestsMapStopsConfiguredTests(): void
+    public function testSkippedTestsMapStopsConfiguredTests()
     {
         $tested = 0;
         foreach (get_class_methods(TaggableCachePoolContract::class) as $method) {

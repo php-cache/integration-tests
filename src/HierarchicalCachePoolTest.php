@@ -34,20 +34,20 @@ abstract class HierarchicalCachePoolTest extends TestCase
     abstract public function createCachePool(): CacheItemPoolInterface;
 
     #[Before]
-    public function setupService(): void
+    public function setupService()
     {
         $this->cache = $this->createCachePool();
     }
 
     #[After]
-    public function tearDownService(): void
+    public function tearDownService()
     {
         if (isset($this->cache)) {
             $this->cache->clear();
         }
     }
 
-    public function testBasicUsage(): void
+    public function testBasicUsage()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
@@ -65,7 +65,7 @@ abstract class HierarchicalCachePoolTest extends TestCase
         $this->assertFalse($this->cache->hasItem('|users|4711|followers|4|likes'));
     }
 
-    public function testChain(): void
+    public function testChain()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
@@ -107,7 +107,7 @@ abstract class HierarchicalCachePoolTest extends TestCase
         $this->assertFalse($this->cache->hasItem('|aaa|bbb|zzz|ddd'));
     }
 
-    public function testRemoval(): void
+    public function testRemoval()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
@@ -126,7 +126,7 @@ abstract class HierarchicalCachePoolTest extends TestCase
         $this->assertTrue($this->cache->hasItem('foo'), 'All cache should not be cleared when deleting root');
     }
 
-    public function testRemovalWhenDeferred(): void
+    public function testRemovalWhenDeferred()
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
