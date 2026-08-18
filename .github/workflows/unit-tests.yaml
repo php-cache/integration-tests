@@ -1,37 +1,48 @@
+name: CI
+
 on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  phpunit:
+  tests:
     strategy:
+      fail-fast: false
       matrix:
-        include:
-          - php: 7.0
-            suite: PHPCache
-          - php: 7.0
-            suite: Symfony
-          - php: 7.0
-            suite: Laravel
-#          - php: 7.0
-#            suite: Stash
-          - php: 7.1
-            suite: PHPCache
-#          - php: 7.2
-#            suite: PHPCache
+        php: ['8.2', '8.3', '8.4', '8.5']
     runs-on: ubuntu-latest
-    services:
-      redis:
-        image: redis:6.2.8
-        ports:
-          - 6379:6379
     steps:
-      - uses: actions/checkout@v4
-      - uses: shivammathur/setup-php@v2
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@2.37.2
         with:
           php-version: ${{ matrix.php }}
-      - run: |
-          composer install --no-plugins --prefer-source
-      - run: ./vendor/bin/simple-phpunit --testsuite ${{ matrix.suite }}
-        env:
-          SYMFONY_PHPUNIT_VERSION: '5.7'
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: composer test
+
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@2.37.2
+        with:
+          php-version: '8.2'
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: composer validate --strict
+      - run: composer analyse
+      - run: composer cs-check
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@2.37.2
+        with:
+          php-version: '8.5'
+          coverage: xdebug
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: composer coverage

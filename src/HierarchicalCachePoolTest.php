@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of php-cache organization.
  *
@@ -21,49 +23,38 @@ use Psr\Cache\CacheItemPoolInterface;
  */
 abstract class HierarchicalCachePoolTest extends TestCase
 {
-    /**
-     * @type array with functionName => reason.
-     */
-    protected $skippedTests = [];
+    /** @var array<string, string> */
+    protected array $skippedTests = [];
 
-    /**
-     * @type CacheItemPoolInterface
-     */
-    protected $cache;
+    protected CacheItemPoolInterface $cache;
 
     /**
      * @return CacheItemPoolInterface that is used in the tests
      */
-    abstract public function createCachePool();
+    abstract public function createCachePool(): CacheItemPoolInterface;
 
-    /**
-     * @before
-     */
     #[Before]
-    public function setupService()
+    public function setupService(): void
     {
         $this->cache = $this->createCachePool();
     }
 
-    /**
-     * @after
-     */
     #[After]
-    public function tearDownService()
+    public function tearDownService(): void
     {
-        if ($this->cache !== null) {
+        if (isset($this->cache)) {
             $this->cache->clear();
         }
     }
 
-    public function testBasicUsage()
+    public function testBasicUsage(): void
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
         }
 
         $user = 4711;
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 10; ++$i) {
             $item = $this->cache->getItem(sprintf('|users|%d|followers|%d|likes', $user, $i));
             $item->set('Justin Bieber');
             $this->cache->save($item);
@@ -74,7 +65,7 @@ abstract class HierarchicalCachePoolTest extends TestCase
         $this->assertFalse($this->cache->hasItem('|users|4711|followers|4|likes'));
     }
 
-    public function testChain()
+    public function testChain(): void
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
@@ -116,7 +107,7 @@ abstract class HierarchicalCachePoolTest extends TestCase
         $this->assertFalse($this->cache->hasItem('|aaa|bbb|zzz|ddd'));
     }
 
-    public function testRemoval()
+    public function testRemoval(): void
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
@@ -135,7 +126,7 @@ abstract class HierarchicalCachePoolTest extends TestCase
         $this->assertTrue($this->cache->hasItem('foo'), 'All cache should not be cleared when deleting root');
     }
 
-    public function testRemovalWhenDeferred()
+    public function testRemovalWhenDeferred(): void
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
             $this->markTestSkipped($this->skippedTests[__FUNCTION__]);

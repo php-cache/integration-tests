@@ -1,63 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.8/phpunit.xsd"
-  backupGlobals="false"
-  backupStaticAttributes="false"
-  colors="true"
-  convertErrorsToExceptions="true"
-  convertNoticesToExceptions="true"
-  convertWarningsToExceptions="true"
-  processIsolation="false"
-  stopOnFailure="false"
-  syntaxCheck="false"
-  bootstrap="vendor/autoload.php"
-  >
-  <testsuites>
-    <testsuite name="PHPCache">
-      <directory>./vendor/cache/cache/src/Adapter/Redis/Tests/</directory>
-      <directory>./vendor/cache/cache/src/Bridge/SimpleCache/Tests/</directory>
-    </testsuite>
-
-    <testsuite name="Laravel">
-      <directory>./vendor/cache/cache/src/Adapter/Illuminate/Tests/</directory>
-    </testsuite>
-
-    <testsuite name="Symfony">
-      <file>./vendor/symfony/cache/Tests/Adapter/FilesystemAdapterTest.php</file>
-    </testsuite>
-
-    <testsuite name="Stash">
-      <file>./tests/StashTest.php</file>
-    </testsuite>
-  </testsuites>
-
-  <filter>
-    <whitelist>
-      <directory>./</directory>
-      <exclude>
-        <directory>./Tests</directory>
-        <directory>./vendor</directory>
-      </exclude>
-    </whitelist>
-  </filter>
-
-  <listeners>
-    <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener">
-      <arguments>
-        <array>
-          <element key="time-sensitive">
-            <array>
-              <element key="0"><string>Cache\IntegrationTests</string></element>
-              <element key="2"><string>Symfony\Component\Cache</string></element>
-              <element key="3"><string>Symfony\Component\Cache\Tests\Fixtures</string></element>
-              <element key="4"><string>Symfony\Component\Cache\Tests\Traits</string></element>
-              <element key="5"><string>Symfony\Component\Cache\Traits</string></element>
-            </array>
-          </element>
-        </array>
-      </arguments>
-    </listener>
-  </listeners>
-
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.5/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         cacheDirectory=".phpunit.cache"
+         colors="true">
+    <testsuites>
+        <testsuite name="integration">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
 </phpunit>

@@ -1,58 +1,99 @@
-# PSR-6 and PSR-16 Integration tests
-[![Gitter](https://badges.gitter.im/php-cache/cache.svg)](https://gitter.im/php-cache/cache?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+# PSR-6 and PSR-16 integration tests
+
+[![CI](https://github.com/php-cache/integration-tests/actions/workflows/unit-tests.yaml/badge.svg)](https://github.com/php-cache/integration-tests/actions/workflows/unit-tests.yaml)
 [![Latest Stable Version](https://poser.pugx.org/cache/integration-tests/v/stable)](https://packagist.org/packages/cache/integration-tests)
-[![Total Downloads](https://poser.pugx.org/cache/integration-tests/downloads)](https://packagist.org/packages/cache/integration-tests)
-[![Monthly Downloads](https://poser.pugx.org/cache/integration-tests/d/monthly.png)](https://packagist.org/packages/cache/integration-tests)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 
-This repository contains integration tests to make sure your implementation of a PSR-6 and/or PSR-16 cache follows the rules by PHP-FIG.
-It is a part of the PHP Cache organisation. To read about us please read the shared documentation at [www.php-cache.com](http://www.php-cache.com).
+This package tests whether cache implementations follow PSR-6 or PSR-16. It also includes suites for PHP Cache tags and hierarchical keys.
 
-### Install
+Version 1 requires PHP 8.2, PHPUnit 11, `psr/cache` 3, `psr/simple-cache` 3, and `cache/tag-interop` 4.
+
+## Installation
 
 ```bash
-composer require --dev cache/integration-tests:dev-master
+composer require --dev cache/integration-tests:^1.0
 ```
 
-### Use
+## Testing a PSR-6 pool
 
-Create a test that looks like this:
+Extend `CachePoolTest` and return a fresh pool from `createCachePool()`:
 
 ```php
-class PoolIntegrationTest extends CachePoolTest
+use Cache\IntegrationTests\CachePoolTest;
+use Psr\Cache\CacheItemPoolInterface;
+
+final class PoolIntegrationTest extends CachePoolTest
 {
-    public function createCachePool()
+    public function createCachePool(): CacheItemPoolInterface
     {
-        return new CachePool();
+        return new MyCachePool();
     }
 }
 ```
 
-You could also test your tag implementation:
+Use `HierarchicalCachePoolTest` for pools that support hierarchical keys.
+
+## Testing tags
 
 ```php
-class TagIntegrationTest extends TaggableCachePoolTest
+use Cache\IntegrationTests\TaggableCachePoolTest;
+use Cache\TagInterop\TaggableCacheItemPoolInterface;
+
+final class TagIntegrationTest extends TaggableCachePoolTest
 {
-    public function createCachePool()
+    public function createCachePool(): TaggableCacheItemPoolInterface
     {
-        return new CachePool();
+        return new MyTaggableCachePool();
     }
 }
 ```
 
-You can also test a PSR-16 implementation:
+## Testing a PSR-16 cache
 
 ```php
-class CacheIntegrationTest extends SimpleCacheTest
+use Cache\IntegrationTests\SimpleCacheTest;
+use Psr\SimpleCache\CacheInterface;
+
+final class SimpleCacheIntegrationTest extends SimpleCacheTest
 {
-    public function createSimpleCache()
+    public function createSimpleCache(): CacheInterface
     {
-        return new SimpleCache();
+        return new MySimpleCache();
     }
 }
 ```
 
-### Contribute
+## Skipping unsupported behavior
 
-Contributions are very welcome! Send a pull request or
-report any issues you find on the [issue tracker](http://issues.php-cache.com).
+The test bases expose a typed `$skippedTests` map. Skip a test only when the storage backend cannot provide that behavior.
+
+```php
+use Cache\IntegrationTests\CachePoolTest;
+use Psr\Cache\CacheItemPoolInterface;
+
+final class PoolWithSkippedExpirationTest extends CachePoolTest
+{
+    /** @var array<string, string> */
+    protected array $skippedTests = [
+        'testExpiration' => 'This backend does not support expiration.',
+    ];
+
+    public function createCachePool(): CacheItemPoolInterface
+    {
+        return new MyCachePool();
+    }
+}
+```
+
+## Contributing
+
+Run the complete local checks before opening a pull request:
+
+```bash
+composer test
+composer coverage
+composer analyse
+composer cs-check
+```
+
+Report problems on the [GitHub issue tracker](https://github.com/php-cache/integration-tests/issues).
