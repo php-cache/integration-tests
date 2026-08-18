@@ -25,13 +25,13 @@
     "require": {
         "php": "^8.2",
         "cache/tag-interop": "^2.0",
-        "phpunit/phpunit": "^11.5",
         "psr/cache": "^3.0",
         "psr/simple-cache": "^3.0"
     },
     "require-dev": {
         "php-cs-fixer/shim": "3.95.19",
         "phpstan/phpstan": "2.2.8",
+        "phpunit/phpunit": "^11.5 || ^12.0",
         "symfony/cache": "^7.4 || ^8.0"
     },
     "autoload": {
