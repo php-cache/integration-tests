@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of php-cache organization.
+ *
+ * (c) 2015 Aaron Scherer <aequasi@gmail.com>, Tobias Nyholm <tobias.nyholm@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Cache\IntegrationTests\Tests\Fixtures;
 
 use Psr\Cache\CacheItemInterface;
@@ -73,7 +82,7 @@ final class ValidatingCachePool implements CacheItemPoolInterface
     /** @return non-empty-string */
     public static function validateKey(mixed $key): string
     {
-        if (!is_string($key) || '' === $key || 1 === preg_match('~[{}()/\\\\@:]~', $key)) {
+        if (!\is_string($key) || '' === $key || 1 === preg_match('~[{}()/\\\\@:]~', $key)) {
             throw new InvalidArgumentException('Cache keys must be non-empty strings without reserved characters.');
         }
 

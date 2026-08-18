@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of php-cache organization.
+ *
+ * (c) 2015 Aaron Scherer <aequasi@gmail.com>, Tobias Nyholm <tobias.nyholm@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Cache\IntegrationTests\Tests\Fixtures;
 
 use Psr\SimpleCache\CacheInterface;
@@ -89,7 +98,7 @@ final class ValidatingSimpleCache implements CacheInterface
     private function validateValues(iterable $values): iterable
     {
         foreach ($values as $key => $value) {
-            $validatedKey = is_int($key) ? (string) $key : ValidatingCachePool::validateKey($key);
+            $validatedKey = \is_int($key) ? (string) $key : ValidatingCachePool::validateKey($key);
 
             yield $validatedKey => $value;
         }
@@ -111,7 +120,7 @@ final class ValidatingSimpleCache implements CacheInterface
         foreach ($keys as $key) {
             $lookupKey = "\0".$key;
 
-            yield $key => array_key_exists($lookupKey, $valuesByKey) ? $valuesByKey[$lookupKey] : $default;
+            yield $key => \array_key_exists($lookupKey, $valuesByKey) ? $valuesByKey[$lookupKey] : $default;
         }
     }
 }

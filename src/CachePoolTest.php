@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of php-cache organization.
  *
- * (c) 2015-2015 Aaron Scherer <aequasi@gmail.com>, Tobias Nyholm <tobias.nyholm@gmail.com>
+ * (c) 2015 Aaron Scherer <aequasi@gmail.com>, Tobias Nyholm <tobias.nyholm@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -225,7 +225,7 @@ abstract class CachePoolTest extends TestCase
             $itemKey = $item->getKey();
             $this->assertEquals($itemKey, $key, 'Keys must be preserved when fetching multiple items');
             $this->assertEquals('biz' !== $key, $item->isHit());
-            $this->assertTrue(in_array($key, $keys), 'Cache key can not change.');
+            $this->assertTrue(\in_array($key, $keys), 'Cache key can not change.');
 
             // Remove $key for $keys
             foreach ($keys as $k => $v) {
@@ -739,7 +739,7 @@ abstract class CachePoolTest extends TestCase
 
         $item = $this->cache->getItem('key');
         $this->assertTrue('5' === $item->get(), 'Wrong data type. If we store a string we must get an string back.');
-        $this->assertTrue(is_string($item->get()), 'Wrong data type. If we store a string we must get an string back.');
+        $this->assertTrue(\is_string($item->get()), 'Wrong data type. If we store a string we must get an string back.');
     }
 
     public function testDataTypeInteger()
@@ -754,7 +754,7 @@ abstract class CachePoolTest extends TestCase
 
         $item = $this->cache->getItem('key');
         $this->assertTrue(5 === $item->get(), 'Wrong data type. If we store an int we must get an int back.');
-        $this->assertTrue(is_int($item->get()), 'Wrong data type. If we store an int we must get an int back.');
+        $this->assertTrue(\is_int($item->get()), 'Wrong data type. If we store an int we must get an int back.');
     }
 
     public function testDataTypeNull()
@@ -769,8 +769,7 @@ abstract class CachePoolTest extends TestCase
 
         $this->assertTrue($this->cache->hasItem('key'), 'Null is a perfectly fine cache value. hasItem() should return true when null are stored. ');
         $item = $this->cache->getItem('key');
-        $this->assertTrue(null === $item->get(), 'Wrong data type. If we store null we must get an null back.');
-        $this->assertTrue(is_null($item->get()), 'Wrong data type. If we store null we must get an null back.');
+        $this->assertNull($item->get(), 'Wrong data type. If we store null we must get a null back.');
         $this->assertTrue($item->isHit(), 'isHit() should return true when null are stored. ');
     }
 
@@ -786,7 +785,7 @@ abstract class CachePoolTest extends TestCase
         $this->cache->save($item);
 
         $item = $this->cache->getItem('key');
-        $this->assertTrue(is_float($item->get()), 'Wrong data type. If we store float we must get an float back.');
+        $this->assertTrue(\is_float($item->get()), 'Wrong data type. If we store float we must get an float back.');
         $this->assertEquals($float, $item->get());
         $this->assertTrue($item->isHit(), 'isHit() should return true when float are stored. ');
     }
@@ -802,7 +801,7 @@ abstract class CachePoolTest extends TestCase
         $this->cache->save($item);
 
         $item = $this->cache->getItem('key');
-        $this->assertTrue(is_bool($item->get()), 'Wrong data type. If we store boolean we must get an boolean back.');
+        $this->assertTrue(\is_bool($item->get()), 'Wrong data type. If we store boolean we must get an boolean back.');
         $this->assertTrue($item->get());
         $this->assertTrue($item->isHit(), 'isHit() should return true when true are stored. ');
     }
@@ -819,7 +818,7 @@ abstract class CachePoolTest extends TestCase
         $this->cache->save($item);
 
         $item = $this->cache->getItem('key');
-        $this->assertTrue(is_array($item->get()), 'Wrong data type. If we store array we must get an array back.');
+        $this->assertTrue(\is_array($item->get()), 'Wrong data type. If we store array we must get an array back.');
         $this->assertEquals($array, $item->get());
         $this->assertTrue($item->isHit(), 'isHit() should return true when array are stored. ');
     }
@@ -837,7 +836,7 @@ abstract class CachePoolTest extends TestCase
         $this->cache->save($item);
 
         $item = $this->cache->getItem('key');
-        $this->assertTrue(is_object($item->get()), 'Wrong data type. If we store object we must get an object back.');
+        $this->assertTrue(\is_object($item->get()), 'Wrong data type. If we store object we must get an object back.');
         $this->assertEquals($object, $item->get());
         $this->assertTrue($item->isHit(), 'isHit() should return true when object are stored. ');
     }
@@ -850,7 +849,7 @@ abstract class CachePoolTest extends TestCase
 
         $data = '';
         for ($i = 0; $i < 256; ++$i) {
-            $data .= chr($i);
+            $data .= \chr($i);
         }
 
         $item = $this->cache->getItem('key');

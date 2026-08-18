@@ -4,7 +4,7 @@ parameters:
     treatPhpDocTypesAsCertain: false
     ignoreErrors:
         -
-            message: '#^Method Cache\\IntegrationTests\\(?:Tests\\)?(?:CachePoolTest|HierarchicalCachePoolTest|SimpleCacheTest|TaggableCachePoolTest)::(?:advanceTime|setupService|tearDownService|test[A-Z][A-Za-z0-9_]*)\(\) has no return type specified\.$#'
+            message: '#^Method Cache\\IntegrationTests\\(?:Tests\\)?(?:CachePoolTest|HierarchicalCachePoolTest|SimpleCacheTest|TaggableCachePoolTest)::(?:advanceTime|setupService|tearDownService|test[A-Za-z0-9_]*)\(\) has no return type specified\.$#'
             identifier: missingType.return
     paths:
         - src

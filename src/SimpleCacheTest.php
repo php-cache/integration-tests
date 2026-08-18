@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of php-cache organization.
  *
- * (c) 2015-2015 Aaron Scherer <aequasi@gmail.com>, Tobias Nyholm <tobias.nyholm@gmail.com>
+ * (c) 2015 Aaron Scherer <aequasi@gmail.com>, Tobias Nyholm <tobias.nyholm@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -762,7 +762,7 @@ abstract class SimpleCacheTest extends TestCase
         $float = 1.23456789;
         $this->cache->set('key', $float);
         $result = $this->cache->get('key');
-        $this->assertTrue(is_float($result), 'Wrong data type. If we store float we must get an float back.');
+        $this->assertTrue(\is_float($result), 'Wrong data type. If we store float we must get an float back.');
         $this->assertEquals($float, $result);
     }
 
@@ -774,7 +774,7 @@ abstract class SimpleCacheTest extends TestCase
 
         $this->cache->set('key', false);
         $result = $this->cache->get('key');
-        $this->assertTrue(is_bool($result), 'Wrong data type. If we store boolean we must get an boolean back.');
+        $this->assertTrue(\is_bool($result), 'Wrong data type. If we store boolean we must get an boolean back.');
         $this->assertFalse($result);
         $this->assertTrue($this->cache->has('key'), 'has() should return true when true are stored. ');
     }
@@ -788,7 +788,7 @@ abstract class SimpleCacheTest extends TestCase
         $array = ['a' => 'foo', 2 => 'bar'];
         $this->cache->set('key', $array);
         $result = $this->cache->get('key');
-        $this->assertTrue(is_array($result), 'Wrong data type. If we store array we must get an array back.');
+        $this->assertTrue(\is_array($result), 'Wrong data type. If we store array we must get an array back.');
         $this->assertEquals($array, $result);
     }
 
@@ -802,7 +802,7 @@ abstract class SimpleCacheTest extends TestCase
         $object->a = 'foo';
         $this->cache->set('key', $object);
         $result = $this->cache->get('key');
-        $this->assertTrue(is_object($result), 'Wrong data type. If we store object we must get an object back.');
+        $this->assertTrue(\is_object($result), 'Wrong data type. If we store object we must get an object back.');
         $this->assertEquals($object, $result);
     }
 
@@ -814,7 +814,7 @@ abstract class SimpleCacheTest extends TestCase
 
         $data = '';
         for ($i = 0; $i < 256; ++$i) {
-            $data .= chr($i);
+            $data .= \chr($i);
         }
 
         $array = ['a' => 'foo', 2 => 'bar'];
