@@ -6,7 +6,7 @@
 
 This package tests whether cache implementations follow PSR-6 or PSR-16. It also includes suites for PHP Cache tags and hierarchical keys.
 
-Version 1 requires PHP 8.2, PHPUnit 11, `psr/cache` 3, `psr/simple-cache` 3, and `cache/tag-interop` 4.
+Version 1 requires PHP 8.2, PHPUnit 11.5 or 12, `psr/cache` 3, `psr/simple-cache` 2 or 3, and `cache/tag-interop` 2.
 
 ## Installation
 

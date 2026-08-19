@@ -9,10 +9,21 @@ permissions:
 
 jobs:
   tests:
+    name: PHP ${{ matrix.php }}, PSR-16 ${{ matrix.psr_simple_cache }}
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.2', '8.3', '8.4', '8.5']
+        include:
+          - php: '8.2'
+            psr_simple_cache: '2.0.0'
+          - php: '8.2'
+            psr_simple_cache: '3.0.0'
+          - php: '8.3'
+            psr_simple_cache: '3.0.0'
+          - php: '8.4'
+            psr_simple_cache: '3.0.0'
+          - php: '8.5'
+            psr_simple_cache: '3.0.0'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -20,7 +31,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: none
-      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: composer update --with "psr/simple-cache:${{ matrix.psr_simple_cache }}" --no-interaction --prefer-dist --no-progress
       - run: composer test
 
   quality:
