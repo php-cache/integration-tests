@@ -178,6 +178,34 @@ abstract class TaggableCachePoolTest extends TestCase
         $this->assertCount(1, $item->getPreviousTags());
     }
 
+    public function testNumericStringTagsRemainUsable()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        foreach (['0', '123', '-1'] as $tag) {
+            $key = 'key_'.str_replace('-', 'minus_', $tag);
+            $this->assertTrue($this->cache->save($this->cache->getItem($key)->set('value')->setTags([$tag])));
+            $this->assertTrue($this->cache->hasItem($key));
+            $this->assertTrue($this->cache->invalidateTag($tag));
+            $this->assertFalse($this->cache->hasItem($key));
+        }
+    }
+
+    public function testTagNamesOutsidePortableKeyAlphabetRemainUsable()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        $tag = 'tag with spaces![]?';
+        self::assertTrue($this->cache->save($this->cache->getItem('key_with_special_tag')->set('value')->setTags([$tag])));
+        self::assertTrue($this->cache->hasItem('key_with_special_tag'));
+        self::assertTrue($this->cache->invalidateTag($tag));
+        self::assertFalse($this->cache->hasItem('key_with_special_tag'));
+    }
+
     /**
      * The tag must be removed whenever we remove an item. If not, when creating a new item
      * with the same key will get the same tags.
@@ -275,6 +303,34 @@ abstract class TaggableCachePoolTest extends TestCase
         $this->cache->invalidateTags(['tag1']);
 
         $this->assertTrue($this->cache->hasItem('key'), 'Item k list should be removed when clearing the tags');
+    }
+
+    public function testInvalidateTagsValidatesEveryTagBeforeMutation()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        self::assertTrue($this->cache->save($this->cache->getItem('key')->set('value')->setTags(['valid'])));
+
+        try {
+            $this->cache->invalidateTags(['valid', '']);
+            self::fail('invalidateTags accepted an invalid tag');
+        } catch (\Psr\Cache\InvalidArgumentException) {
+        }
+
+        self::assertTrue($this->cache->hasItem('key'));
+    }
+
+    public function testInvalidateTagRemovesDeferredItem()
+    {
+        if (isset($this->skippedTests[__FUNCTION__])) {
+            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
+        }
+
+        self::assertTrue($this->cache->saveDeferred($this->cache->getItem('key')->set('value')->setTags(['tag'])));
+        self::assertTrue($this->cache->invalidateTag('tag'));
+        self::assertFalse($this->cache->hasItem('key'));
     }
 
     /**
